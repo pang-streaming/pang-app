@@ -7,13 +7,15 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "pang-app",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.pang.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +23,20 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.pang.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "fonts": [
+      "./assets/fonts/WantedSans-Regular.otf",
+      "./assets/fonts/WantedSans-Medium.otf",
+      "./assets/fonts/WantedSans-SemiBold.otf",
+      "./assets/fonts/WantedSans-Bold.otf",
+      "./assets/fonts/WantedSans-ExtraBold.otf",
+      "./assets/fonts/WantedSans-Black.otf",
+      "./assets/fonts/WantedSans-ExtraBlack.otf"
+    ]
   }
 }
