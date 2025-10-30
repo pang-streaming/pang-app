@@ -4,13 +4,14 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react-native"
 import TextInput from "../ui/TextInput";
 
-interface AuthTextFieldProps extends TextInputProps {
+interface SideActionTextFieldProps extends TextInputProps {
   icon: React.ReactNode;
-  isSecret?: boolean;
+  actionIcon: React.ReactNode;
+  actionOnPress: () => void;
 }
 
-export default function AuthTextField({ icon, isSecret = false, ...props }: AuthTextFieldProps) {
-  const [isSecretText, setIsSecretText] = useState(isSecret);
+export default function SideActionTextField({ icon, actionIcon, actionOnPress, ...props }: SideActionTextFieldProps) {
+
   const [focused, setFocused] = useState(false);
 
   return (
@@ -21,7 +22,6 @@ export default function AuthTextField({ icon, isSecret = false, ...props }: Auth
         {...props}
         placeholderTextColor="#A3A3A3"
         style={{ flex: 1, height: "100%", color: "white" }}
-        secureTextEntry={isSecretText}
         autoComplete="off"
         autoCapitalize="none"
         autoCorrect={false}
@@ -29,13 +29,9 @@ export default function AuthTextField({ icon, isSecret = false, ...props }: Auth
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-      {isSecret && focused && (
-        <TouchableOpacity onPress={() => setIsSecretText(!isSecretText)}>
-          {isSecretText
-            ? <Eye size={16} color="#A3A3A3" />
-            : <EyeOff size={16} color="#A3A3A3" />}
-        </TouchableOpacity>
-      )}
+      <SideActionButton onPress={actionOnPress}>
+        {actionIcon}
+      </SideActionButton>
     </Container>
   );
 }
@@ -60,4 +56,15 @@ const Divider = styled.View`
   width: 0.5px;
   height: 30px;
   background-color: #737373;
+`;
+
+const SideActionButton = styled.TouchableOpacity`
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background-color: #A3A3A3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
 `;

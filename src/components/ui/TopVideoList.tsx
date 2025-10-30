@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Dimensions, Animated, Text, Image } from 'react-native';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Card from '@/components/ui/card';
+import Card from '@/components/ui/Card';
 import axios from 'axios';
 
 type StreamItem = {

@@ -1,4 +1,4 @@
-import Header from '@/components/ui/header';
+import Header from '@/components/ui/Header';
 import TopVideoList from '@/components/ui/TopVideoList';
 import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Dimensions, Animated } from 'react-native';

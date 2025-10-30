@@ -4,7 +4,7 @@ import Text from "@/components/ui/Text";
 import { Image, View } from "react-native";
 import styled from "styled-components/native";
 import Character from "@/assets/pang-character.svg";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import RegisterTextButton from "@/components/auth/RegisterTextButton";
 import AuthTextField from "@/components/auth/AuthTextField";
 import User from "@/components/icons/User";
@@ -27,7 +27,9 @@ export default function SiginInScreen() {
             <LoginItemContainer>
                 <AuthTextField icon={<User />} placeholder="이메일"/>
                 <AuthTextField icon={<Lock/>} placeholder="비밀번호" isSecret/>
-                <Button label="로그인" onPress={() => {console.log("로그인")}}/>
+                <Button label="로그인" onPress={() => {
+                    router.replace("/(tabs)");
+                }}/>
                 <DividerText/>            
                 <OAuthLoginButtonContainer>
                     <OAuthLoginButton icon={<GoogleIcon/>}/>
