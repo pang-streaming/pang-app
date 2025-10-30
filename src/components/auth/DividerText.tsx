@@ -1,11 +1,13 @@
-import styled from "styled-components/native"
+import styled, { useTheme } from "styled-components/native"
+import type { ThemeProps } from "@/theme/types";
 import Text from "../ui/Text"
 
 export default function DividerText() {
+    const theme = useTheme();
     return (
         <Container>
             <Divider/>
-            <Text color="#737373" size={18} weight="500">또는</Text>
+            <Text size={18} weight="500" color={theme.colors.text.subtitle}>또는</Text>
             <Divider/>
         </Container>
     )
@@ -25,5 +27,5 @@ const Container = styled.View`
 const Divider = styled.View`
     width: 50%;
     height: 1px;
-    background-color: #737373;
+    background-color: ${({ theme }: ThemeProps) => theme.colors.stroke.normal};
 `

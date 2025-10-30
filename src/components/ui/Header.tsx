@@ -1,4 +1,5 @@
 import styled from "styled-components/native"
+import type { ThemeProps } from "@/theme/types";
 import Logo from '@/assets/logo.svg';
 
 export default function Header() {
@@ -18,7 +19,7 @@ const Container = styled.View`
     align-content: space-between;
 
     border-bottom-width: 1px;
-    border-bottom-color: #E5E5EA;
+    border-bottom-color: ${({ theme }: ThemeProps) => theme.colors.border.light};
 
     margin-bottom: 20px;
 `

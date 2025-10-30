@@ -1,4 +1,5 @@
-import styled from "styled-components/native"
+import styled, { useTheme } from "styled-components/native"
+import type { ThemeProps } from "@/theme/types";
 import { TextInputProps, TouchableOpacity } from "react-native"
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react-native"
@@ -10,6 +11,7 @@ interface AuthTextFieldProps extends TextInputProps {
 }
 
 export default function AuthTextField({ icon, isSecret = false, ...props }: AuthTextFieldProps) {
+  const theme = useTheme();
   const [isSecretText, setIsSecretText] = useState(isSecret);
   const [focused, setFocused] = useState(false);
 
@@ -19,8 +21,8 @@ export default function AuthTextField({ icon, isSecret = false, ...props }: Auth
       <Divider />
       <TextInput
         {...props}
-        placeholderTextColor="#A3A3A3"
-        style={{ flex: 1, height: "100%", color: "white" }}
+        placeholderTextColor={theme.colors.text.placeholder}
+        style={{ flex: 1, height: "100%", color: theme.colors.text.normal }}
         secureTextEntry={isSecretText}
         autoComplete="off"
         autoCapitalize="none"
@@ -32,8 +34,8 @@ export default function AuthTextField({ icon, isSecret = false, ...props }: Auth
       {isSecret && focused && (
         <TouchableOpacity onPress={() => setIsSecretText(!isSecretText)}>
           {isSecretText
-            ? <Eye size={16} color="#A3A3A3" />
-            : <EyeOff size={16} color="#A3A3A3" />}
+            ? <Eye size={16} color={theme.colors.text.subtitle} />
+            : <EyeOff size={16} color={theme.colors.text.subtitle} />}
         </TouchableOpacity>
       )}
     </Container>
@@ -51,7 +53,7 @@ const Container = styled.View`
   height: 50px;
 
   border-radius: 8px;
-  background-color: #262626;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.content.normal};
   
   padding: 0 18px;
 `;
@@ -59,5 +61,5 @@ const Container = styled.View`
 const Divider = styled.View`
   width: 0.5px;
   height: 30px;
-  background-color: #737373;
-`;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.stroke.normal};
+`

@@ -1,5 +1,6 @@
 import React from "react";
 import { Text as RNText, TextProps, TextStyle } from "react-native";
+import { useTheme } from "styled-components/native";
 
 export type FontWeight =
   | "100"
@@ -59,7 +60,8 @@ export default function Text({
   ...rest
 }: TextPropsExtended) {
   const fontFamily = weightMap[weight] || "WantedSans-Regular";
-  const textColor = color || "#000";
+  const theme = useTheme();
+  const textColor = color || theme.colors.text.normal;
   
   const textStyle: TextStyle = {
     fontFamily,

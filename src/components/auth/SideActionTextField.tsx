@@ -1,4 +1,5 @@
-import styled from "styled-components/native"
+import styled, { useTheme } from "styled-components/native"
+import type { ThemeProps } from "@/theme/types";
 import { TextInputProps, TouchableOpacity } from "react-native"
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react-native"
@@ -11,7 +12,7 @@ interface SideActionTextFieldProps extends TextInputProps {
 }
 
 export default function SideActionTextField({ icon, actionIcon, actionOnPress, ...props }: SideActionTextFieldProps) {
-
+  const theme = useTheme();
   const [focused, setFocused] = useState(false);
 
   return (
@@ -20,8 +21,8 @@ export default function SideActionTextField({ icon, actionIcon, actionOnPress, .
       <Divider />
       <TextInput
         {...props}
-        placeholderTextColor="#A3A3A3"
-        style={{ flex: 1, height: "100%", color: "white" }}
+        placeholderTextColor={theme.colors.text.placeholder}
+        style={{ flex: 1, height: "100%", color: theme.colors.text.normal }}
         autoComplete="off"
         autoCapitalize="none"
         autoCorrect={false}
@@ -47,7 +48,7 @@ const Container = styled.View`
   height: 50px;
 
   border-radius: 8px;
-  background-color: #262626;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.content.normal};
   
   padding: 0 18px;
 `;
@@ -55,14 +56,14 @@ const Container = styled.View`
 const Divider = styled.View`
   width: 0.5px;
   height: 30px;
-  background-color: #737373;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.stroke.normal};
 `;
 
 const SideActionButton = styled.TouchableOpacity`
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background-color: #A3A3A3;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.primary.light};
   display: flex;
   justify-content: center;
   align-items: center;

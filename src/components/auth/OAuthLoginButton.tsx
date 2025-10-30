@@ -1,4 +1,5 @@
 import styled from "styled-components/native"
+import type { ThemeProps } from "@/theme/types";
 import { TouchableOpacity } from "react-native"
 import GoogleIcon from "@/assets/google.svg"
 
@@ -26,5 +27,5 @@ const OAuthLoginButtonContainer = styled(TouchableOpacity)`
 
     border-radius: 8px;
 
-    background-color: #262626;
+    background-color: ${({ theme }: ThemeProps) => theme.colors.content.normal};
 `

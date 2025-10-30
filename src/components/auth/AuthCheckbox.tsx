@@ -1,5 +1,6 @@
 import { Checkbox } from "expo-checkbox";
-import styled from "styled-components/native";
+import styled, { useTheme } from "styled-components/native";
+import type { ThemeProps } from "@/theme/types";
 
 interface AuthCheckboxProps {
     isChecked: boolean;
@@ -11,16 +12,17 @@ interface AuthCheckboxProps {
 export default function AuthCheckbox({
     isChecked, element, onValueChange , background = false
 }: AuthCheckboxProps) {
+    const theme = useTheme();
     return (
         <CheckboxContainer background={background}>
             <Checkbox
                 style={
                     !isChecked ? 
-                        {backgroundColor: '#404040', borderColor: '#404040', height: 20, width: 20,borderRadius:4} 
+                        {backgroundColor: theme.colors.button.disabled, borderColor: theme.colors.button.disabled, height: 20, width: 20,borderRadius:4} 
                         : 
                         {height: 20, width: 20, borderRadius:4}
                 }
-                color={isChecked ? '#404040' : undefined}
+                color={isChecked ? theme.colors.button.disabled : undefined}
                 value={isChecked}
                 onValueChange={onValueChange}
             />
@@ -29,13 +31,17 @@ export default function AuthCheckbox({
     )
 }
 
-const CheckboxContainer = styled.View<{background: boolean}>`
+interface CheckboxContainerProps {
+    background: boolean;
+}
+
+const CheckboxContainer = styled.View<CheckboxContainerProps>`
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     gap: 10px;
-    background-color: ${(props: {background: boolean}) => props.background ? '#262626' : 'transparent'};
+    background-color: ${({ theme, background }: ThemeProps & CheckboxContainerProps) => background ? theme.colors.content.normal : 'transparent'};
     width: 100%;
     height: 55px;
     padding: 0 20px;

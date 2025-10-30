@@ -23,8 +23,8 @@ export default function SignUpIndexScreen() {
 
     return <Body dismiss>
         <TextContainer>
-            <Text weight="extrabold" size={24} align="left" color="white">PANG 서비스 약관에</Text>
-            <Text weight="extrabold" size={24} align="left" color="white">동의해주세요.</Text>
+            <Text weight="extrabold" size={24} align="left">PANG 서비스 약관에</Text>
+            <Text weight="extrabold" size={24} align="left">동의해주세요.</Text>
             <SignupTermsAgree/>
             <AuthNextButton onPress={handleNext} disabled={!canProceed} step={1}/>
         </TextContainer>

@@ -3,8 +3,10 @@ import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { View } from 'react-native';
-import styled from 'styled-components/native';
+import { View, useColorScheme } from 'react-native';
+import styled, { ThemeProvider } from 'styled-components/native';
+import { darkTheme, lightTheme } from '@/theme/theme';
+import { useThemeStore } from '@/stores/useThemeStore';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -24,12 +26,26 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider style={{ flex: 1 }}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-          <Stack>
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="[...messing]" options={{ headerShown: false }} />
-          </Stack>        
+        <ThemedAppWrapper />
       </GestureHandlerRootView>
     </SafeAreaProvider>      
+  );
+}
+
+function ThemedAppWrapper() {
+  const mode = useThemeStore((s) => s.mode);
+  const colorScheme = useColorScheme();
+  const effectiveMode = mode === 'system' ? (colorScheme ?? 'light') : mode;
+  const theme = effectiveMode === 'dark' ? darkTheme : lightTheme;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <StatusBar style={effectiveMode === 'dark' ? 'light' : 'dark'} translucent backgroundColor="transparent" />
+      <Stack>
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="[...messing]" options={{ headerShown: false }} />
+      </Stack>
+    </ThemeProvider>
   );
 }

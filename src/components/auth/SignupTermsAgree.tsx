@@ -1,10 +1,11 @@
-import styled from "styled-components/native"
+import styled, { useTheme } from "styled-components/native"
 import AuthCheckbox from "./AuthCheckbox"
 import Text from "@/components/ui/Text"
 import { useAuthRegisterStore } from "@/stores/useAuthRegisterStore"
 import { router } from "expo-router"
 
 export default function SignupTermsAgree() {
+    const theme = useTheme();
     const { allAgree, termAgree, privacyAgree, setAllAgree, setTermAgree, setPrivacyAgree } = useAuthRegisterStore();
 
     return (
@@ -13,7 +14,6 @@ export default function SignupTermsAgree() {
                 isChecked={allAgree}
                 element={
                     <Text 
-                        color="white"
                         size={16} 
                         weight="medium" 
                         align="left"
@@ -29,17 +29,15 @@ export default function SignupTermsAgree() {
                 element={
                     <TermsAgreeTextContainer>
                         <Text 
-                            color="white"
                             size={16} 
                             weight="medium" 
                             align="left"
                             onPress={() => {router.push("/(auth)/(signup)/terms")}}
-                            style={{ textDecorationLine: 'underline', color: "#FF3377" }}
+                            style={{ textDecorationLine: 'underline', color: theme.colors.hover.normal }}
                         >
                             서비스 이용 약관
                         </Text>
                         <Text 
-                            color="white"
                             size={16} 
                             weight="medium" 
                             align="left"
@@ -55,17 +53,15 @@ export default function SignupTermsAgree() {
                 element={
                     <TermsAgreeTextContainer>
                         <Text 
-                            color="white"
                             size={16} 
                             weight="medium" 
                             align="left"
                             onPress={() => {router.push("/(auth)/(signup)/terms")}}
-                            style={{ textDecorationLine: 'underline', color: "#FF3377" }}
+                            style={{ textDecorationLine: 'underline', color: theme.colors.hover.normal }}
                         >
                             개인정보 수집 및 이용 동의
                         </Text>
                         <Text 
-                            color="white"
                             size={16} 
                             weight="medium" 
                             align="left"

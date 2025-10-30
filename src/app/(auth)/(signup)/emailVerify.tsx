@@ -11,8 +11,10 @@ import AuthTextField from "@/components/auth/AuthTextField";
 import User from "@/components/icons/User";
 import SideActionTextField from "@/components/auth/SideActionTextField";
 import { SendHorizonal } from "lucide-react-native";
+import { useTheme } from "styled-components/native";
 
 export default function EmailVerifyScreen() {
+    const theme = useTheme();
     const [email, setEmail] = useState("");
     const [checkedEmail, setCheckedEmail] = useState(false);
 
@@ -24,8 +26,8 @@ export default function EmailVerifyScreen() {
 
     return <Body dismiss>
         <TextContainer>
-            <Text weight="extrabold" size={24} align="left" color="white">이메일을 입력한 후,</Text>
-            <Text weight="extrabold" size={24} align="left" color="white">이메일 인증을 진행해주세요</Text>
+            <Text weight="extrabold" size={24} align="left">이메일을 입력한 후,</Text>
+            <Text weight="extrabold" size={24} align="left">이메일 인증을 진행해주세요</Text>
             <EmailVerifyContainer>
                 <SideActionTextField 
                     value={email}
@@ -33,7 +35,7 @@ export default function EmailVerifyScreen() {
                     icon={<User/>} 
                     keyboardType="email-address"
                     placeholder="이메일을 입력해주세요"
-                    actionIcon={<SendHorizonal size={16} color="#262626"/>}
+                    actionIcon={<SendHorizonal size={16} color={theme.colors.common.white}/>} 
                     actionOnPress={() => {setCheckedEmail(true)}}
                 />
             </EmailVerifyContainer>

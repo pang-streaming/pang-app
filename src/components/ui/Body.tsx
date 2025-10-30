@@ -1,10 +1,12 @@
 import { StatusBar } from "expo-status-bar";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, useColorScheme } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import styled from "styled-components/native";
+import styled, { useTheme } from "styled-components/native";
+import type { ThemeProps } from "@/theme/types";
 import { router } from "expo-router";
 import Text from "./Text";
 import Dismiss from "../icons/Dismiss";
+import { useThemeStore } from "@/stores/useThemeStore";
 
 interface BodyProps {
   children: React.ReactNode;
@@ -13,10 +15,14 @@ interface BodyProps {
 
 export default function Body({ children, dismiss = false }: BodyProps) {
   const insets = useSafeAreaInsets(); 
+  const mode = useThemeStore((s) => s.mode);
+  const colorScheme = useColorScheme();
+  const effectiveMode = mode === 'system' ? (colorScheme ?? 'light') : mode;
+  const theme = useTheme();
 
   return (
     <>
-      <StatusBar style="light" translucent backgroundColor="transparent" />
+      <StatusBar style={effectiveMode === 'dark' ? 'light' : 'dark'} translucent backgroundColor="transparent" />
       <Container>
         <Wrapper>
           {dismiss && (
@@ -24,7 +30,7 @@ export default function Body({ children, dismiss = false }: BodyProps) {
               onPress={() => router.back()}
               style={{ top: insets.top + 30 }}
             >
-              <Dismiss/>
+              <Dismiss color={theme.colors.text.normal}/>
             </DismissButton>
           )}
           {children}
@@ -36,7 +42,7 @@ export default function Body({ children, dismiss = false }: BodyProps) {
 
 const Container = styled.View`
   flex: 1;
-  background-color: #000;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.background.normal};
 `;
 
 const Wrapper = styled(SafeAreaView)`

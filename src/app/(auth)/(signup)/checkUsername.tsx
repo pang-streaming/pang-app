@@ -11,8 +11,10 @@ import AuthTextField from "@/components/auth/AuthTextField";
 import User from "@/components/icons/User";
 import SideActionTextField from "@/components/auth/SideActionTextField";
 import { Check, SendHorizonal } from "lucide-react-native";
+import { useTheme } from "styled-components/native";
 
 export default function CheckUsernameScreen() {
+    const theme = useTheme();
     const [username, setUsername] = useState("");
     const [checkedAvailable, setCheckedAvailable] = useState(false);
 
@@ -24,15 +26,15 @@ export default function CheckUsernameScreen() {
 
     return <Body dismiss>
         <TextContainer>
-            <Text weight="extrabold" size={24} align="left" color="white">아이디 입력한 후,</Text>
-            <Text weight="extrabold" size={24} align="left" color="white">아이디 중복 체크를 진행해주세요</Text>
+            <Text weight="extrabold" size={24} align="left">아이디 입력한 후,</Text>
+            <Text weight="extrabold" size={24} align="left">아이디 중복 체크를 진행해주세요</Text>
             <EmailVerifyContainer>
                 <SideActionTextField 
                     value={username}
                     onChangeText={setUsername}
                     icon={<User/>} 
                     placeholder="사용자 이름을 입력해주세요"
-                    actionIcon={<Check size={16} color="#262626"/>}
+                    actionIcon={<Check size={16} color={theme.colors.common.white}/>} 
                     actionOnPress={() => {setCheckedAvailable(true)}}
                 />
             </EmailVerifyContainer>

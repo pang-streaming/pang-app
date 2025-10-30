@@ -1,13 +1,14 @@
 import { Link } from "expo-router";
-import styled from "styled-components/native";
+import styled, { useTheme } from "styled-components/native";
 import Text from "../ui/Text";
 
 export default function RegisterTextButton() {
+    const theme = useTheme();
     return (
         <SignUpTextContainer>
-            <Text color="white" size={14} weight="400" align="center">가입 된 계정이 없으신가요?</Text>
+            <Text size={14} weight="400" align="center" color={theme.colors.text.subtitle}>가입 된 계정이 없으신가요?</Text>
             <Link href="/(auth)/(signup)">
-                <Text color="white" size={14} weight="bold" align="center" style={{ textDecorationLine: 'underline' }}>회원가입</Text>
+                <Text size={14} weight="bold" align="center" style={{ textDecorationLine: 'underline', color: theme.colors.primary.normal }}>회원가입</Text>
             </Link>
         </SignUpTextContainer>
     )

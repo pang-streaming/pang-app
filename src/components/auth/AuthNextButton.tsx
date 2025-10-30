@@ -1,4 +1,4 @@
-import styled from "styled-components/native";
+import styled, { useTheme } from "styled-components/native";
 import Button from "../ui/Button";
 
 interface AuthNextButtonProps {
@@ -8,14 +8,15 @@ interface AuthNextButtonProps {
 }
 
 export default function AuthNextButton({ onPress, disabled, step }: AuthNextButtonProps) {
+    const theme = useTheme();
     const stepLength = 6;
 
     const getStepColor = (index: number) => {
         const stepNumber = index + 1;
         if (stepNumber === step) {
-            return "#FF0055";
+            return theme.colors.primary.normal;
         }
-        return "#404040";
+        return theme.colors.button.disabled;
     };
 
     return (
