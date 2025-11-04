@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Stack, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 
@@ -9,14 +9,25 @@ export default function TabLayout() {
           animation: "fade"
         }}
     >
+          <Stack.Screen 
+          name="modal-example" 
+          options={{ 
+            presentation: 'card',
+            headerShown: false,
+            gestureEnabled: false,
+            fullScreenGestureEnabled: false,
+            animation: "none",
+            
+          }} 
+        />
       <Tabs.Screen
         name="index"
         options={{
-            headerShown:false,
-            title: '홈',
-            tabBarIcon: ({ color, size }) => (
-                <Ionicons name="home-outline" size={size} color={color} />
-            ),
+          headerShown:false,
+          title: '홈',
+          tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen

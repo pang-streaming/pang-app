@@ -47,6 +47,9 @@ importers:
       expo-system-ui:
         specifier: ^6.0.8
         version: 6.0.8(expo@54.0.20)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))
+      expo-video:
+        specifier: ~3.0.13
+        version: 3.0.13(expo@54.0.20)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
       lucide-react-native:
         specifier: ^0.548.0
         version: 0.548.0(react-native-svg@15.14.0(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -2076,6 +2079,13 @@ packages:
     resolution: {integrity: sha512-pTzAIufEZdVPKql6iMi5ylVSPqV1qbEopz9G6TSECQmnNde2nwq42PxdFBaUEd8IZJ/fdJLQnOT3m6+XJ5s7jg==}
     peerDependencies:
       expo: '*'
+
+  expo-video@3.0.13:
+    resolution: {integrity: sha512-ew7+lvQsFTED8m46oYEXq5KOWoR1BBCTKF3xdj6HG9Z0egfhiStCH++cW95xYzrhTJAquzvJ5Rv27Ld0zL/vhw==}
+    peerDependencies:
+      expo: '*'
+      react: '*'
+      react-native: '*'
 
   expo@54.0.20:
     resolution: {integrity: sha512-mWHky+H63W60P5Oo+VbtqzF2sLvdaoSSwG57H9rlq1DrgIla++QJZuwJkXXo55lYPymVmkVhwG6FjWYKKylwpw==}
@@ -6178,6 +6188,12 @@ snapshots:
   expo-updates-interface@2.0.0(expo@54.0.20):
     dependencies:
       expo: 54.0.20(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.13)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+
+  expo-video@3.0.13(expo@54.0.20)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      expo: 54.0.20(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.13)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-native: 0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0)
 
   expo@54.0.20(@babel/core@7.28.5)(@expo/metro-runtime@6.1.2)(expo-router@6.0.13)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0):
     dependencies:

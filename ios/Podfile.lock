@@ -265,6 +265,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSystemUI (6.0.8):
     - ExpoModulesCore
+  - ExpoVideo (3.0.13):
+    - ExpoModulesCore
   - EXUpdatesInterface (2.0.0):
     - ExpoModulesCore
   - FBLazyVector (0.81.5)
@@ -2250,6 +2252,7 @@ DEPENDENCIES:
   - ExpoScreenOrientation (from `../node_modules/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../node_modules/expo-secure-store/ios`)
   - ExpoSystemUI (from `../node_modules/expo-system-ui/ios`)
+  - ExpoVideo (from `../node_modules/expo-video/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
@@ -2365,6 +2368,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-secure-store/ios"
   ExpoSystemUI:
     :path: "../node_modules/expo-system-ui/ios"
+  ExpoVideo:
+    :path: "../node_modules/expo-video/ios"
   EXUpdatesInterface:
     :path: "../node_modules/expo-updates-interface/ios"
   FBLazyVector:
@@ -2535,6 +2540,7 @@ SPEC CHECKSUMS:
   ExpoScreenOrientation: ef9ab3fb85c8a8ff57d52aa169b750aca03f0f4c
   ExpoSecureStore: 6506992a9f53c94ea716c54d4a63144965945c2c
   ExpoSystemUI: 2761aa6875849af83286364811d46e8ed8ea64c7
+  ExpoVideo: f7bf972210f2e716a7912ce7a1dc594926502181
   EXUpdatesInterface: 5adf50cb41e079c861da6d9b4b954c3db9a50734
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   hermes-engine: 9f4dfe93326146a1c99eb535b1cb0b857a3cd172

@@ -42,9 +42,21 @@ function ThemedAppWrapper() {
     <ThemeProvider theme={theme}>
       <StatusBar style={effectiveMode === 'dark' ? 'light' : 'dark'} translucent backgroundColor="transparent" />
       <Stack>
+        <Stack.Screen 
+          name="stream-viewer" 
+          options={{ 
+            presentation: 'card',
+            headerShown: false,
+            gestureEnabled: false,
+            fullScreenGestureEnabled: false,
+            animation: "none",
+            
+          }} 
+        />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="[...messing]" options={{ headerShown: false }} />
+
       </Stack>
     </ThemeProvider>
   );

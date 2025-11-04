@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Dimensions, Animated, Text, Image } from 'react-native';
+import { Dimensions, Animated, Image } from 'react-native';
+import Text from '@/components/ui/Text';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Card from '@/components/ui/Card';
@@ -90,15 +91,23 @@ export default function TopVideoList({
               opacity={opacity}
             >
               <ThumbnailImage source={{ uri: item.thumbnail }} />
+              <TopOverlay>
+                <LiveIconContainer>
+                  <LiveIcon />
+                  <Text size={12} weight="600" color="white">
+                    {item.viewCount.toLocaleString()}명  
+                  </Text>  
+                </LiveIconContainer>
+              </TopOverlay>
               <TitleOverlay>
                 <LinearGradient
-                  colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.5)']}
+                  colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
                   style={{
                     position: 'absolute',
                     bottom: 0,
                     left: 0,
                     right: 0,
-                    height: '130%',
+                    height: '200%',
                     borderRadius: 12,
                   }}
                 />
@@ -111,7 +120,6 @@ export default function TopVideoList({
                   />
                   <NicknameText>{item.nickname}</NicknameText>
                 </UserInfo>
-                <ViewCountText>👁 {item.viewCount}</ViewCountText>
               </TitleOverlay>
             </Card>
           );
@@ -136,6 +144,15 @@ const ThumbnailImage = styled.Image`
   border-radius: 12px;
 `;
 
+const TopOverlay = styled.View`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px;
+  z-index: 1;
+`;
+
 const TitleOverlay = styled.View`
   position: absolute;
   bottom: 0;
@@ -145,7 +162,7 @@ const TitleOverlay = styled.View`
   z-index: 1;
 `;
 
-const TitleText = styled.Text`
+const TitleText = styled(Text)`
   font-size: 14px;
   font-weight: 600;
   color: white;
@@ -165,15 +182,32 @@ const ProfileImage = styled.Image`
   margin-right: 6px;
 `;
 
-const NicknameText = styled.Text`
+const NicknameText = styled(Text)`
   font-size: 12px;
   color: white;
   flex: 1;
 `;
 
-const ViewCountText = styled.Text`
+const ViewCountText = styled(Text)`
   font-size: 11px;
   color: white;
 `;
 
+const LiveIcon = styled.View`
+  width: 8px;
+  height: 8px;
+  
+  background-color: #FF0055;
+  border-radius: 50%;
+`
 
+const LiveIconContainer = styled.View`
+  background-color: rgba(18,18,18,0.9);
+  padding: 2px 4px;
+  align-self: flex-start;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  border-radius: 4px;
+`
