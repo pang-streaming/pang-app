@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
 
 export function useFullscreen(onEnterFullscreen?: () => void) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const onEnterFullscreenRef = useRef(onEnterFullscreen);
+  onEnterFullscreenRef.current = onEnterFullscreen;
 
   useEffect(() => {
     if (isFullscreen) {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE_LEFT);
-      onEnterFullscreen?.();
+      onEnterFullscreenRef.current?.();
     } else {
       ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
     }
@@ -17,7 +19,7 @@ export function useFullscreen(onEnterFullscreen?: () => void) {
         ScreenOrientation.unlockAsync();
       }
     };
-  }, [isFullscreen, onEnterFullscreen]);
+  }, [isFullscreen]);
 
   const enterFullscreen = () => {
     setIsFullscreen(true);
