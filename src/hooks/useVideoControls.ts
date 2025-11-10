@@ -5,9 +5,9 @@ const AUTO_HIDE_DELAY = 3000;
 const ANIMATION_DURATION = 200;
 
 export function useVideoControls() {
-  const [showControls, setShowControls] = useState(true);
+  const [showControls, setShowControls] = useState(false);
   const hideControlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const controlsOpacity = useSharedValue(1);
+  const controlsOpacity = useSharedValue(0);
 
   const hideControls = () => {
     controlsOpacity.value = withTiming(0, { duration: ANIMATION_DURATION });
@@ -44,6 +44,7 @@ export function useVideoControls() {
   });
 
   useEffect(() => {
+    // 초기 마운트 시 애니메이션과 함께 컨트롤 표시
     showControlsWithAnimation();
     
     return () => {
