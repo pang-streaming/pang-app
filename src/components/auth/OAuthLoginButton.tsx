@@ -17,7 +17,7 @@ export default function OAuthLoginButton({ icon, onPress }: OAuthLoginButtonProp
 }
 
 const OAuthLoginButtonContainer = styled(TouchableOpacity)`
-    display: flex;
+    
     flex-direction: row;
     align-items: center;
     justify-content: center;

@@ -36,7 +36,7 @@ interface CheckboxContainerProps {
 }
 
 const CheckboxContainer = styled.View<CheckboxContainerProps>`
-    display: flex;
+    
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;

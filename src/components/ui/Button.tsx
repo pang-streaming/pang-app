@@ -27,7 +27,7 @@ const ButtonContainer = styled.TouchableOpacity<ButtonContainerProps>`
   height: 53px;
   background-color: ${({ theme, disabled }: ButtonContainerProps) => disabled ? theme.colors.button.disabled : theme.colors.primary.normal};
   border-radius: 10px;
-  display: flex;
+  
   justify-content: center;
   align-items: center;
 `;

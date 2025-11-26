@@ -17,7 +17,7 @@ export default function RegisterTextButton() {
 
 const SignUpTextContainer = styled.View`
     margin-top: 20px;
-    display: flex;
+    
     flex-direction: row;
     align-items: center;
     justify-content: center;

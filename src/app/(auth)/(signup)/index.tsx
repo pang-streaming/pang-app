@@ -5,7 +5,6 @@ import { useMemo } from "react";
 import { router } from "expo-router";
 import SignupTermsAgree from "@/components/auth/SignupTermsAgree";
 import { useAuthRegisterStore } from "@/stores/useAuthRegisterStore";
-import Button from "@/components/ui/Button";
 import AuthNextButton from "@/components/auth/AuthNextButton";
 
 export default function SignUpIndexScreen() {

@@ -16,7 +16,7 @@ export default function LoginButtonWithCharater() {
 
 const ButtonContainer = styled.View`
     width: 100%;
-    display: flex;
+    
     flex-direction: column;
     align-items: center;
     justify-content: center;

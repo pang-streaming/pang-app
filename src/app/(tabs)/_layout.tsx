@@ -1,60 +1,66 @@
-import { Stack, Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { Platform } from 'react-native';
-
+import { Stack, Tabs } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { Platform } from "react-native";
+import { useTheme } from "styled-components/native";
+import Menu from "@/assets/tab-icons/menu";
+import Explore from "@/assets/tab-icons/explore";
+import Heart from "@/assets/tab-icons/heart";
 export default function TabLayout() {
+  const theme = useTheme();
+
   return (
-    <Tabs 
-        screenOptions={{
-          animation: "fade"
-        }}
+    <Tabs
+      screenOptions={{
+        animation: "fade",
+        tabBarStyle: {
+          paddingTop: 6,
+          backgroundColor: theme.colors.background.normal,
+          borderTopWidth: 1,
+          borderColor: "#222324",
+        },
+        tabBarActiveTintColor: theme.colors.text.normal,
+        tabBarInactiveTintColor: theme.colors.stroke.normal,
+      }}
     >
-          <Stack.Screen 
-          name="modal-example" 
-          options={{ 
-            presentation: 'card',
-            headerShown: false,
-            gestureEnabled: false,
-            fullScreenGestureEnabled: false,
-            animation: "none",
-            
-          }} 
-        />
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
-          headerShown:false,
-          title: '홈',
-          tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home-outline" size={size} color={color} />
-          ),
+          headerShown: false,
+          title: "홈",
+          tabBarIcon: ({ color, size }) => <Explore color={color} />,
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="follow"
         options={{
-          title: '검색',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search-outline" size={size} color={color} />
-          ),
+          headerShown: false,
+          title: "팔로잉",
+          tabBarIcon: ({ color, size }) => <Heart color={color} />,
         }}
       />
       <Tabs.Screen
-        name="favorites"
+        name="charge"
         options={{
-          title: '즐겨찾기',
+          headerShown: false,
+          title: "충전",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="heart-outline" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="(more)"
         options={{
-          title: '프로필',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" size={size} color={color} />
-          ),
+          headerShown: false,
+          title: "더보기",
+          tabBarIcon: ({ color, size }) => <Menu color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="modal-example"
+        options={{
+          href: null,
+          headerShown: false,
         }}
       />
     </Tabs>

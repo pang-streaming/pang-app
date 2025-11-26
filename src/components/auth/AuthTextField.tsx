@@ -43,7 +43,7 @@ export default function AuthTextField({ icon, isSecret = false, ...props }: Auth
 }
 
 const Container = styled.View`
-  display: flex;
+  
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;

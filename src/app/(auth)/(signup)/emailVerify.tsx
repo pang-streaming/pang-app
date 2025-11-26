@@ -17,9 +17,11 @@ export default function EmailVerifyScreen() {
     const theme = useTheme();
     const [email, setEmail] = useState("");
     const [checkedEmail, setCheckedEmail] = useState(false);
+    const { setEmail: setStoreEmail } = useAuthRegisterStore();
 
     const handleNext = () => {
         if (email.length !== 0 && checkedEmail) {
+            setStoreEmail(email);
             router.push("/(auth)/(signup)/checkUsername");
         }
     };

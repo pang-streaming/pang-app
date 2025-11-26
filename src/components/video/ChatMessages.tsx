@@ -83,28 +83,28 @@ export default function ChatMessages({
         </EmptyState>
       ) : (
         messages.map((msg) => {
-          if (msg.type === 'subscription') {
-            return (
-              <SubscriptionNotification key={msg.id}>
-                <SubscriptionContent>
-                  <SubscriptionText>
-                    <Text size={13} weight="400" color="#FFFFFF">
-                      {msg.username} 님이
-                    </Text>
-                    <Text size={13} weight="400" color="#FF0055">
-                      {' '}{msg.subscriptionMonths}개월동안 구독 중이에요
-                    </Text>
-                    <Text size={13} weight="400" color="#FFFFFF">
-                      {' '}🎉
-                    </Text>
-                  </SubscriptionText>
-                </SubscriptionContent>
-                <SparklesIcon>
-                  <Sparkles size={16} color="#FF0055" fill="#FF0055" />
-                </SparklesIcon>
-              </SubscriptionNotification>
-            );
-          }
+          // if (msg.type === 'subscription') {
+          //   return (
+          //     <SubscriptionNotification key={msg.id}>
+          //       <SubscriptionContent>
+          //         <SubscriptionText>
+          //           <Text size={13} weight="400" color="#FFFFFF">
+          //             {msg.username} 님이
+          //           </Text>
+          //           <Text size={13} weight="400" color="#FF0055">
+          //             {' '}{msg.subscriptionMonths}개월동안 구독 중이에요
+          //           </Text>
+          //           <Text size={13} weight="400" color="#FFFFFF">
+          //             {' '}🎉
+          //           </Text>
+          //         </SubscriptionText>
+          //       </SubscriptionContent>
+          //       <SparklesIcon>
+          //         <Sparkles size={16} color="#FF0055" fill="#FF0055" />
+          //       </SparklesIcon>
+          //     </SubscriptionNotification>
+          //   );
+          // }
 
           if (msg.type === 'filter-notice') {
             return (

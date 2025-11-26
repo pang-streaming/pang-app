@@ -44,7 +44,7 @@ const ButtonContainer = styled.View`
 `
 
 const StepContainer = styled.View`
-    display: flex;
+    
     flex-direction: row;
     gap: 4px;
     justify-content: center;
