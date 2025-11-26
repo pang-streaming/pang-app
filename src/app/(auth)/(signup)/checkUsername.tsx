@@ -17,9 +17,11 @@ export default function CheckUsernameScreen() {
     const theme = useTheme();
     const [username, setUsername] = useState("");
     const [checkedAvailable, setCheckedAvailable] = useState(false);
+    const { setId } = useAuthRegisterStore();
 
     const handleNext = () => {
         if (username.length !== 0 && checkedAvailable) {
+            setId(username);
             router.push("/(auth)/(signup)/setPassword");
         }
     };

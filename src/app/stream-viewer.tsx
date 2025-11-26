@@ -4,34 +4,30 @@ import { useVideoControls } from '@/hooks/useVideoControls';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useVideoPlayerControls } from '@/hooks/useVideoPlayerControls';
 import { useSwipeDownGesture } from '@/hooks/useSwipeDownGesture';
-import { router } from 'expo-router';
-import { useEffect, useRef, useState, useCallback } from 'react';
-import type { LayoutChangeEvent } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  runOnJS,
-} from 'react-native-reanimated';
+import { useVideoInfoAnimation } from '@/hooks/useVideoInfoAnimation';
+import { useStreamViewer } from '@/hooks/useStreamViewer';
+import { router, useLocalSearchParams } from 'expo-router';
 import VideoPlayer from '@/components/video/VideoPlayer';
-import VideoInfo from '@/components/video/VideoInfo';
-import ChatBox from '@/components/video/ChatBox';
+import StreamContent from '@/components/video/StreamContent';
 import BombModal from '@/components/modal/BombModal';
-import type { ChatMessage } from '@/types/chat';
+import { useStreamDetail } from '@/entities/stream/useStream';
+import { useFollowUser } from '@/features/follow/useFollow';
+import { useUsernameToInfo } from '@/entities/user/useUser';
+import { Alert } from 'react-native';
+import { useEffect } from 'react';
 
 const videoSource =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 export default function StreamViewer() {
+  const { streamId } = useLocalSearchParams<{ streamId: string }>();
+  const { streamData } = useStreamDetail(streamId);
   const {
     showControls,
     controlsAnimatedStyle,
     showControlsWithAnimation,
     toggleControls,
   } = useVideoControls();
-
-  const showControlsRef = useRef(showControlsWithAnimation);
-  showControlsRef.current = showControlsWithAnimation;
 
   const { isFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
 
@@ -42,172 +38,67 @@ export default function StreamViewer() {
 
   const swipeDownGesture = useSwipeDownGesture(exitFullscreen);
 
-  const [showVideoInfo, setShowVideoInfo] = useState(true);
-  const videoInfoOpacity = useSharedValue(0);
-  const videoInfoHeight = useSharedValue(0);
-  const videoInfoTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const originalHeightRef = useRef<number>(0);
-  const [showBombModal, setShowBombModal] = useState(false);
-  const [videoPlayerHeight, setVideoPlayerHeight] = useState(0);
-  const [videoPlayerWidth, setVideoPlayerWidth] = useState(0);
-  const [videoPlayerX, setVideoPlayerX] = useState(0);
-  const [videoPlayerY, setVideoPlayerY] = useState(0);
+  const {
+    showVideoInfo,
+    videoInfoStyle,
+    videoInfoHeight,
+    originalHeightRef,
+  } = useVideoInfoAnimation(showControls, isFullscreen);
 
-  const videoInfoStyle = useAnimatedStyle(() => {
-    return {
-      opacity: videoInfoOpacity.value,
-      height: videoInfoHeight.value === 0 ? undefined : videoInfoHeight.value,
-    };
+  // 팔로우 기능 - otherUserInfo의 isFollowed 값으로 상태 관리
+  const { data: otherUserData } = useUsernameToInfo({ 
+    username: streamData?.username || '' 
   });
+  const { mutate: followMutate } = useFollowUser();
 
-  const showVideoInfoWithAnimation = useCallback(() => {
-    setShowVideoInfo(true);
-    videoInfoOpacity.value = withTiming(1, { duration: 500 });
-    if (originalHeightRef.current > 0) {
-      // 원래 높이가 저장되어 있으면 복원
-      videoInfoHeight.value = withTiming(originalHeightRef.current, { duration: 500 });
+  // otherUserInfo에서 가져온 isFollowed 값으로 팔로우 상태 판단
+  const isFollowing = otherUserData?.data?.isFollowed ?? false;
+
+  const toggleFollow = () => {
+    if (!streamData?.username) {
+      Alert.alert('오류', '사용자 정보를 불러올 수 없습니다.');
+      return;
     }
-  }, [videoInfoOpacity, videoInfoHeight]);
 
-  const hideVideoInfoWithAnimation = useCallback(() => {
-    // 현재 높이를 저장
-    if (videoInfoHeight.value > 0) {
-      originalHeightRef.current = videoInfoHeight.value;
-    }
-    videoInfoOpacity.value = withTiming(0, { duration: 500 });
-    videoInfoHeight.value = withTiming(0, { duration: 500 }, () => {
-      runOnJS(setShowVideoInfo)(false);
-    });
-  }, [videoInfoOpacity, videoInfoHeight]);
-
-  const [viewerCount] = useState(17);
-  const [streamingTime] = useState('02:01:07');
-  const [followerCount] = useState(3);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 'sub1',
-      username: '대듀08',
-      message: '',
-      timestamp: new Date(),
-      type: 'subscription',
-      subscriptionMonths: 37,
-    },
-    {
-      id: '1',
-      username: '감귤상은',
-      message: '감귤상은 하이',
-      timestamp: new Date(),
-      type: 'normal',
-    },
-    {
-      id: '2',
-      username: '엔레고러브',
-      message: '오빠안녕',
-      timestamp: new Date(),
-      type: 'normal',
-    },
-    {
-      id: 'filter1',
-      username: '시스템',
-      message: '쾌적한 시청 환경을 위해 일부 메시지는 필터링 됩니다. 클린 라이브 채팅 문화를 만들기에 동참해 주세요!',
-      timestamp: new Date(),
-      type: 'filter-notice',
-    },
-    {
-      id: '3',
-      username: '감귤',
-      message: '감귤 하이',
-      timestamp: new Date(),
-      type: 'normal',
-    },
-    {
-      id: '4',
-      username: '대구에듀',
-      message: '대구에듀 하이',
-      timestamp: new Date(),
-      type: 'normal',
-      textColor: '#4A9EFF',
-    },
-  ]);
+    followMutate(
+      {
+        username: streamData.username,
+        isFollowing,
+      },
+      {
+        onError: (error) => {
+          console.error('팔로우 실패:', error);
+          Alert.alert('오류', '팔로우 요청에 실패했습니다.');
+        },
+      }
+    );
+  };
+  const {
+    showBombModal,
+    setShowBombModal,
+    videoPlayerHeight,
+    videoPlayerWidth,
+    videoPlayerX,
+    videoPlayerY,
+    viewerCount,
+    streamingTime,
+    followerCount,
+    chatMessages,
+    handleVideoPlayerLayout,
+    handleSubscribe,
+    handleSendMessage,
+  } = useStreamViewer({ showControlsWithAnimation, isFullscreen });
 
   const handleFullscreen = () => {
     enterFullscreen();
     showControlsWithAnimation();
   };
 
-  const handleFollow = () => {
-    // 팔로우 로직
-  };
-
-  const handleSubscribe = () => {
-    // 구독 로직
-  };
-
-  const handleSendMessage = (message: string) => {
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      username: '나',
-      message,
-      timestamp: new Date(),
-    };
-    setChatMessages(prev => [...prev, newMessage]);
-  };
-
-  useEffect(() => {
-    if (isFullscreen) {
-      showControlsRef.current();
-    }
-  }, [isFullscreen]);
-
-  useEffect(() => {
-    // 컨트롤이 활성화되면 비디오 정보도 다시 표시
-    if (showControls && !isFullscreen) {
-      showVideoInfoWithAnimation();
-      
-      // 기존 타이머가 있으면 클리어
-      if (videoInfoTimerRef.current) {
-        clearTimeout(videoInfoTimerRef.current);
-      }
-      
-      // 3초 후 VideoInfo 숨기기
-      videoInfoTimerRef.current = setTimeout(() => {
-        hideVideoInfoWithAnimation();
-      }, 3000);
-    }
-
-    return () => {
-      if (videoInfoTimerRef.current) {
-        clearTimeout(videoInfoTimerRef.current);
-      }
-    };
-  }, [showControls, isFullscreen, showVideoInfoWithAnimation, hideVideoInfoWithAnimation]);
-
-  useEffect(() => {
-    // 초기 마운트 시 비디오 정보를 애니메이션과 함께 표시
-    showVideoInfoWithAnimation();
-    
-    // 3초 후 VideoInfo 숨기기
-    videoInfoTimerRef.current = setTimeout(() => {
-      hideVideoInfoWithAnimation();
-    }, 3000);
-
-    return () => {
-      if (videoInfoTimerRef.current) {
-        clearTimeout(videoInfoTimerRef.current);
-      }
-    };
-  }, [showVideoInfoWithAnimation, hideVideoInfoWithAnimation]);
-
   return (
-    <Container>
-      <VideoPlayerContainer
-        onLayout={(event: LayoutChangeEvent) => {
-          const { x, y, width, height } = event.nativeEvent.layout;
-          setVideoPlayerHeight(height);
-          setVideoPlayerWidth(width);
-          setVideoPlayerX(x);
-          setVideoPlayerY(y);
-        }}
+    <Container isFullscreen={isFullscreen}>
+      <VideoPlayerContainer 
+        isFullscreen={isFullscreen}
+        onLayout={handleVideoPlayerLayout}
       >
         <VideoPlayer
           player={player}
@@ -221,40 +112,26 @@ export default function StreamViewer() {
           swipeDownGesture={swipeDownGesture}
         />
       </VideoPlayerContainer>
+      
       {!isFullscreen && (
-        <ContentContainer>
-          {showVideoInfo && (
-            <VideoInfoContainer
-              style={videoInfoStyle}
-              onLayout={(event: LayoutChangeEvent) => {
-                const height = event.nativeEvent.layout.height;
-                if (videoInfoHeight.value === 0) {
-                  videoInfoHeight.value = height;
-                  originalHeightRef.current = height;
-                }
-              }}
-            >
-              <VideoInfo
-                title="기찬이와 마인크래프트~"
-                streamerName="먼지"
-                viewerCount={viewerCount}
-                streamingTime={streamingTime}
-                followerCount={followerCount}
-                tags={['버추얼', 'talk']}
-                onFollow={handleFollow}
-                onSubscribe={handleSubscribe}
-              />
-            </VideoInfoContainer>
-          )}
-          <AnimatedChatBoxContainer>
-            <ChatBox
-              messages={chatMessages}
-              onSendMessage={handleSendMessage}
-              onBombPress={() => setShowBombModal(true)}
-            />
-          </AnimatedChatBoxContainer>
-        </ContentContainer>
+        <StreamContent
+          showVideoInfo={showVideoInfo}
+          videoInfoStyle={videoInfoStyle}
+          videoInfoHeight={videoInfoHeight}
+          originalHeightRef={originalHeightRef}
+          viewerCount={viewerCount}
+          streamingTime={streamingTime}
+          followerCount={followerCount}
+          chatMessages={chatMessages}
+          onSendMessage={handleSendMessage}
+          onBombPress={() => setShowBombModal(true)}
+          onFollow={toggleFollow}
+          onSubscribe={handleSubscribe}
+          streamData={streamData}
+          isFollowing={isFollowing}
+        />
       )}
+      
       <BombModal
         visible={showBombModal}
         onClose={() => setShowBombModal(false)}
@@ -268,29 +145,29 @@ export default function StreamViewer() {
   );
 }
 
-const Container = styled.View`
+const Container = styled.View<{ isFullscreen?: boolean }>`
   flex: 1;
   flex-direction: column;
-  background-color: ${({ theme }: ThemeProps) => theme.colors.background.normal};
+  background-color: ${({ theme, isFullscreen }: ThemeProps & { isFullscreen?: boolean }) => 
+    isFullscreen ? '#000000' : theme.colors.background.normal};
+  ${({ isFullscreen }: { isFullscreen?: boolean }) => isFullscreen && `
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+  `}
 `;
 
-const VideoPlayerContainer = styled.View`
+const VideoPlayerContainer = styled.View<{ isFullscreen?: boolean }>`
   width: 100%;
-`;
-
-const ContentContainer = styled.View`
-  flex: 1;
-  flex-direction: column;
-  width: 100%;
-  position: relative;
-`;
-
-const VideoInfoContainer = styled(Animated.View)`
-  width: 100%;
-  overflow: hidden;
-`;
-
-const AnimatedChatBoxContainer = styled(Animated.View)`
-  flex: 1;
-  width: 100%;
+  ${({ isFullscreen }: { isFullscreen?: boolean }) => isFullscreen && `
+    flex: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  `}
 `;

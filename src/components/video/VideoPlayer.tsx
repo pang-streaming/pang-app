@@ -35,6 +35,22 @@ export default function VideoPlayer({
 }: VideoPlayerProps) {
   const insets = useSafeAreaInsets();
 
+  // 플레이어가 초기화되지 않았으면 렌더링하지 않음
+  if (!player) {
+    return null;
+  }
+
+  // 플레이어가 안전하게 접근 가능한지 확인
+  try {
+    // 플레이어 객체가 유효한지 확인 (에러가 발생하지 않으면 유효)
+    if (typeof player !== 'object') {
+      return null;
+    }
+  } catch (error) {
+    console.warn('Player not ready:', error);
+    return null;
+  }
+
   if (isFullscreen) {
     return (
       <GestureDetector gesture={swipeDownGesture}>
@@ -108,10 +124,9 @@ export default function VideoPlayer({
           <VideoView 
             style={{ width: '100%', height: '100%' }} 
             player={player} 
-            allowsPictureInPicture 
+            allowsPictureInPicture={false}
             nativeControls={false}
             contentFit="contain"
-            allowsFullscreen={false}
           />
         </Pressable>
         {showControls && (
@@ -242,7 +257,11 @@ const FullscreenContainer = styled.View`
   background-color: #000000;
   width: 100%;
   height: 100%;
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
 `
 
 const FullscreenVideoContainer = styled.View`
@@ -251,9 +270,10 @@ const FullscreenVideoContainer = styled.View`
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
 `
 
 const LiveIcon = styled.View`

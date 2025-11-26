@@ -1,9 +1,10 @@
-import { Link, Stack } from 'expo-router';
+import { Link, Stack, useRouter } from 'expo-router';
 import { View, StyleSheet } from 'react-native';
 import { useTheme } from 'styled-components/native';
 import Text from '@/components/ui/Text';
 
 export default function NotFoundScreen() {
+  const router = useRouter()
   const theme = useTheme();
   return (
     <>
@@ -16,12 +17,10 @@ export default function NotFoundScreen() {
         <Text weight="regular" size={16} align="center" style={[styles.description, { color: theme.colors.text.subtitle }]}>
           요청하신 페이지가 존재하지 않습니다.
         </Text>
-
-        <Link href="/" style={[styles.link, { backgroundColor: theme.colors.content.light }]}>
-          <Text weight="medium" size={16} align="center">
+          <Text onPress={() => {router.back()}} weight="medium" size={16} align="center">
             홈으로 돌아가기
           </Text>
-        </Link>
+
       </View>
     </>
   );

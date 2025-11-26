@@ -14,7 +14,7 @@ export default function DividerText() {
 }
 
 const Container = styled.View`
-    display: flex;
+    
     flex-direction: row;
     align-items: center;
     justify-content: center;

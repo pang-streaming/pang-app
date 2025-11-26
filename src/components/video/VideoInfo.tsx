@@ -1,32 +1,43 @@
-import { Pressable } from 'react-native';
+import { Pressable, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import type { ThemeProps } from '@/theme/types';
 import Text from '@/components/ui/Text';
+import { useRouter } from 'expo-router';
 
 interface VideoInfoProps {
   title?: string;
   streamerName?: string;
+  username?: string;
   viewerCount?: number;
+  profileImage?: string;
   streamingTime?: string;
   followerCount?: number;
   tags?: string[];
+  isFollowing?: boolean;
   onFollow?: () => void;
   onSubscribe?: () => void;
 }
 
 export default function VideoInfo({
-  title = '기찬이와 마인크래프트~',
-  streamerName = '먼지',
-  viewerCount = 17,
+  title,
+  streamerName,
+  username,
+  viewerCount,
   streamingTime = '02:01:07',
-  followerCount = 3,
+  profileImage,
+  followerCount,
   tags = ['버추얼', 'talk'],
+  isFollowing = false,
   onFollow,
   onSubscribe,
 }: VideoInfoProps) {
   const formatTime = (time: string) => {
     return time;
   };
+
+  const followingStatus = Boolean(isFollowing);
+
+  const router = useRouter();
 
   return (
     <Container>
@@ -58,10 +69,19 @@ export default function VideoInfo({
       </StatsContainer>
 
       <StreamerSection>
-        <StreamerInfo>
+        <StreamerInfo onPress={() => {
+          router.back();
+          if (username) {
+            router.push(`/user-profile?username=${username}`)
+          }
+        }}>
           <AvatarContainer>
             <AvatarBorder>
-              <Avatar />
+              {profileImage ? (
+                <Avatar source={{ uri: profileImage }} />
+              ) : (
+                <AvatarPlaceholder />
+              )}
             </AvatarBorder>
           </AvatarContainer>
           <StreamerDetails>
@@ -74,9 +94,9 @@ export default function VideoInfo({
           </StreamerDetails>
         </StreamerInfo>
         <ActionButtons>
-          <FollowButton onPress={onFollow}>
+          <FollowButton onPress={onFollow} isFollowing={followingStatus}>
             <Text size={12} weight="700" color="#FFFFFF">
-              팔로우
+              {followingStatus ? '언팔로우' : '팔로우'}
             </Text>
           </FollowButton>
           <SubscribeButton onPress={onSubscribe}>
@@ -125,7 +145,7 @@ const StreamerSection = styled.View`
   align-items: center;
 `
 
-const StreamerInfo = styled.View`
+const StreamerInfo = styled.TouchableOpacity`
   flex-direction: row;
   align-items: center;
   flex: 1;
@@ -146,12 +166,19 @@ const AvatarBorder = styled.View`
   justify-content: center;
 `
 
-const Avatar = styled.View`
+const Avatar = styled.ImageBackground`
   width: 100%;
   height: 100%;
   border-radius: 22px;
   background-color: ${({ theme }: ThemeProps) => theme.colors.content.normal};
   overflow: hidden;
+`
+
+const AvatarPlaceholder = styled.View`
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.content.normal};
 `
 
 const StreamerDetails = styled.View`
@@ -164,10 +191,11 @@ const ActionButtons = styled.View`
   gap: 8px;
 `
 
-const FollowButton = styled(Pressable)`
+const FollowButton = styled(TouchableOpacity)<{ isFollowing?: boolean }>`
   padding: 8px 16px;
   border-radius: 8px;
-  background-color: ${({ theme }: ThemeProps) => theme.colors.primary.normal};
+  background-color: ${({ theme, isFollowing }: ThemeProps & { isFollowing?: boolean }) => 
+    isFollowing ? theme.colors.content.normal : theme.colors.primary.normal};
 `
 
 const SubscribeButton = styled(Pressable)`

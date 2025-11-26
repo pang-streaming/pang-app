@@ -80,7 +80,7 @@ export default function SignupTermsAgree() {
 
 
 const SignupTermsAgreeContainer = styled.View`
-    display: flex;
+    
     margin-top: 70px;
     gap:5px;
     height: 160px;
@@ -88,7 +88,7 @@ const SignupTermsAgreeContainer = styled.View`
 
 
 const TermsAgreeTextContainer = styled.View`
-    display: flex;
+    
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;

@@ -38,7 +38,7 @@ export default function SideActionTextField({ icon, actionIcon, actionOnPress, .
 }
 
 const Container = styled.View`
-  display: flex;
+  
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
@@ -64,7 +64,7 @@ const SideActionButton = styled.TouchableOpacity`
   height: 28px;
   border-radius: 8px;
   background-color: ${({ theme }: ThemeProps) => theme.colors.primary.light};
-  display: flex;
+  
   justify-content: center;
   align-items: center;
   
