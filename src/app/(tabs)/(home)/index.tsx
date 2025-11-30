@@ -43,10 +43,7 @@ export default function HomeScreen() {
             <Button label="모달 열기" onPress={() => router.push('/stream-viewer')} />
           </View>
         </ButtonContainer> */}
-        <ScrollView 
-          showsVerticalScrollIndicator={false}
-        >
-          
+        <ScrollView showsVerticalScrollIndicator={false}>
           {renderCategoryContent()}
         </ScrollView>
     </Container>

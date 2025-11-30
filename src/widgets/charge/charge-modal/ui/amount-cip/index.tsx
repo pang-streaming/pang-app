@@ -17,7 +17,7 @@ export const AmountChip = ({ amount, onClick }: AmountChipProps) => {
 };
 
 const Container = styled(TouchableOpacity)`
-  width: 86px;
+flex: 1;
   height: 28px;
   border-radius: ${({theme}) => theme.borders.maximum};
   border: ${({ theme }) => theme.borders.maximum};

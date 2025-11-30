@@ -18,3 +18,23 @@ export interface LiveStreamDetailData {
     profileImage:string;
     followers: number;
 } 
+
+
+export interface CategoryLive {
+    streamId: string;
+    title: string;
+    url: string;
+    username: string;
+    nickname: string;
+    profileImage: string;
+    viewCount: number;
+    thumbnail?: string;
+  }
+  
+  export interface CategoryLiveResponse {
+    status: string;
+    message: string;
+    data: CategoryLive[];
+    timestamp: string;
+  }
+  

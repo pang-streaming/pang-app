@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styled from 'styled-components/native';
 import type { ThemeProps } from '@/theme/types';
@@ -13,9 +13,19 @@ import { useRouter } from 'expo-router';
 
 export default function FollowScreen() {
   const selectedTabCategory = useCategoryStore((s) => s.selectedTabCategory);
-  const { data: followingLives, isLoading: isLoadingLives, isError: isErrorLives } = useFollowingLives();
-  const { data: followingUsers, isLoading: isLoadingUsers } = useMyFollowing();
+  const { data: followingLives, isLoading: isLoadingLives, isError: isErrorLives, refetch: refetchLives } = useFollowingLives();
+  const { data: followingUsers, isLoading: isLoadingUsers, refetch: refetchUsers } = useMyFollowing();
   const router = useRouter();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await Promise.all([refetchLives(), refetchUsers()]);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const renderLiveTab = () => {
     if (isLoadingLives) {
@@ -43,7 +53,11 @@ export default function FollowScreen() {
     }
 
     return (
-      <LiveListContainer>
+      <LiveListContainer
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
+        }
+      >
         {followingLives.map((stream) => (
           <LiveItemWrapper key={stream.streamId}>
             <LiveElem stream={stream} />
@@ -67,7 +81,12 @@ export default function FollowScreen() {
     }
 
     return (
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
+        }
+      >
         {followingLives && followingLives.length > 0 && (
           <Section>
             <SectionTitle>라이브</SectionTitle>

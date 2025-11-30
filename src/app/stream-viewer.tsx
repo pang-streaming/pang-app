@@ -9,15 +9,15 @@ import { useStreamViewer } from '@/hooks/useStreamViewer';
 import { router, useLocalSearchParams } from 'expo-router';
 import VideoPlayer from '@/components/video/VideoPlayer';
 import StreamContent from '@/components/video/StreamContent';
-import BombModal from '@/components/modal/BombModal';
 import { useStreamDetail } from '@/entities/stream/useStream';
 import { useFollowUser } from '@/features/follow/useFollow';
 import { useUsernameToInfo } from '@/entities/user/useUser';
-import { Alert } from 'react-native';
-import { useEffect } from 'react';
+import { Alert, ActivityIndicator, View, Text } from 'react-native';
+import { useMemo, useEffect } from 'react';
+import BombModal from '@/components/modal/bomb-modal/index';
 
-const videoSource =
-  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+// const videoSource =
+//   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 export default function StreamViewer() {
   const { streamId } = useLocalSearchParams<{ streamId: string }>();
@@ -31,9 +31,29 @@ export default function StreamViewer() {
 
   const { isFullscreen, enterFullscreen, exitFullscreen } = useFullscreen();
 
-  const { player } = useVideoPlayerControls({
-    source: videoSource,
+  useEffect(() => {
+    if (streamData) {
+      console.log('✅ StreamViewer: 방송 데이터 로드 완료', {
+        streamId: streamData.streamId,
+        title: streamData.title,
+        username: streamData.username,
+        url: streamData.url,
+        followers: streamData.followers,
+      });
+    }
+  }, [streamData]);
+
+  const videoSource = useMemo(() => {
+    if (streamData?.url && streamData.url.trim() !== '') {
+      return streamData.url;
+    }
+    return null;
+  }, [streamData?.url]);
+
+  const { player, error: playerError } = useVideoPlayerControls({
+    source: videoSource || '',
     onPlayPause: showControlsWithAnimation,
+    isLive: true, 
   });
 
   const swipeDownGesture = useSwipeDownGesture(exitFullscreen);
@@ -45,13 +65,11 @@ export default function StreamViewer() {
     originalHeightRef,
   } = useVideoInfoAnimation(showControls, isFullscreen);
 
-  // 팔로우 기능 - otherUserInfo의 isFollowed 값으로 상태 관리
   const { data: otherUserData } = useUsernameToInfo({ 
     username: streamData?.username || '' 
   });
   const { mutate: followMutate } = useFollowUser();
 
-  // otherUserInfo에서 가져온 isFollowed 값으로 팔로우 상태 판단
   const isFollowing = otherUserData?.data?.isFollowed ?? false;
 
   const toggleFollow = () => {
@@ -93,6 +111,29 @@ export default function StreamViewer() {
     enterFullscreen();
     showControlsWithAnimation();
   };
+
+  if (!streamData || !videoSource) {
+    return (
+      <Container isFullscreen={false}>
+        <LoadingContainer>
+          <ActivityIndicator size="large" color="#fff" />
+        </LoadingContainer>
+      </Container>
+    );
+  }
+
+  if (playerError) {
+    return (
+      <Container isFullscreen={false}>
+        <ErrorContainer>
+          <ErrorText>비디오를 불러올 수 없습니다.</ErrorText>
+          <ErrorText style={{ marginTop: 8, fontSize: 12 }}>
+            {playerError}
+          </ErrorText>
+        </ErrorContainer>
+      </Container>
+    );
+  }
 
   return (
     <Container isFullscreen={isFullscreen}>
@@ -170,4 +211,25 @@ const VideoPlayerContainer = styled.View<{ isFullscreen?: boolean }>`
     right: 0;
     bottom: 0;
   `}
+`;
+
+const LoadingContainer = styled(View)`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.background.normal};
+`;
+
+const ErrorContainer = styled(View)`
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: ${({ theme }: ThemeProps) => theme.colors.background.normal};
+`;
+
+const ErrorText = styled(Text)`
+  color: ${({ theme }: ThemeProps) => theme.colors.text.normal};
+  font-size: 16px;
+  text-align: center;
 `;

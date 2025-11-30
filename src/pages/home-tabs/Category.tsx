@@ -1,6 +1,7 @@
 import CategoryBox from "@/components/category/CategoryBox"
 import { useCategory } from "@/entities/category/useCategory";
-import styled from "styled-components/native"
+import { View } from "react-native";
+import styled from "styled-components"
 
 
 export default function Category() {
@@ -9,16 +10,16 @@ export default function Category() {
 
     return (
         
-        <Container >
+        <Container>
             {categories.map((c,i) => (
 
-            <CategoryBox key={i} image={c.postImage} categoryName={c.name} viewerCount={c.streamCount} liveCount={c.streamCount}/>
+            <CategoryBox key={i} image={c.postImage} categoryName={c.name} viewerCount={c.streamCount} liveCount={c.streamCount} categoryId={c.id}/>
             ))}
         </Container>
     )
 }
 
-const Container = styled.View`
+const Container = styled(View)`
     width: 100%;
     padding: 0 16px;
     flex-direction: row;

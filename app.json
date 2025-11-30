@@ -19,7 +19,9 @@
       "infoPlist": {
         "UIBackgroundModes": [
           "audio"
-        ]
+        ],
+        "NSPhotoLibraryUsageDescription": "게시글에 이미지를 추가하기 위해 사진 라이브러리 접근 권한이 필요합니다.",
+        "NSPhotoLibraryAddUsageDescription": "게시글에 이미지를 저장하기 위해 사진 라이브러리 접근 권한이 필요합니다."
       }
     },
     "android": {
@@ -49,6 +51,12 @@
         {
           "supportsBackgroundPlayback": true,
           "supportsPictureInPicture": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "게시글에 이미지를 추가하기 위해 사진 라이브러리 접근 권한이 필요합니다."
         }
       ]
     ]
