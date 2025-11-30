@@ -3,14 +3,18 @@ import { View } from "react-native";
 import styled from "styled-components";
 import { MenuRow } from "./ui/menu-row";
 import { ThemeProps } from "@/theme/types";
+import { logoutUser } from "@/features/auth/login/api";
+import { useRouter } from "expo-router";
 
 export const MenuSection = () => {
+  const router = useRouter();
   const menus = [
-    { label: "팔로우 목록 보기", onPress: () => {} },
-    { label: "최근 시청한 영상 보기", onPress: () => {} },
-    { label: "프로필 정보 수정하기", onPress: () => {} },
-    { label: "성인인증 진행하기", onPress: () => {} },
-    { label: "로그아웃", onPress: () => {} },
+
+    { label: "개인정보 처리방침", onPress: () => {} },
+    { label: "버전 정보", onPress: () => {} },
+    { label: "로그아웃", onPress: () => {
+      logoutUser(router)
+    } },
     { label: "회원탈퇴", onPress: () => {} },
   ];
   return (

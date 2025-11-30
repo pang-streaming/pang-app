@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react";
-import { Category, CategoryLiveResponse } from "./type";
+import { Category } from "./type";
 import { fetchCategory, fetchCategoryLives, fetchCategoryVideos } from "./api";
 import { useQuery } from "@tanstack/react-query";
+import { CategoryLiveResponse } from "../stream/type";
 
 export const useCategory = () => {
     return useQuery<Category[]>({

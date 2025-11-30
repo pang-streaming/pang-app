@@ -1,13 +1,24 @@
 import LiveElem from "@/components/live/LiveElem";
-import { View, ActivityIndicator, Text } from "react-native";
+import { View, ActivityIndicator, Text, ScrollView, RefreshControl } from "react-native";
 import styled from "styled-components/native";
 import { useAllLastVideo } from "@/entities/video/useVideo";
 import type { ThemeProps } from "@/theme/types";
+import { useState } from "react";
 
 export default function Video() {
-    const { data: videoResponse, isLoading, isError } = useAllLastVideo();
+    const { data: videoResponse, isLoading, isError, refetch } = useAllLastVideo();
+    const [refreshing, setRefreshing] = useState(false);
 
-    if (isLoading) {
+    const onRefresh = async () => {
+        setRefreshing(true);
+        try {
+            await refetch();
+        } finally {
+            setRefreshing(false);
+        }
+    };
+
+    if (isLoading && !refreshing) {
         return (
             <Container>
                 <ActivityIndicator size="large" color="#fff" />
@@ -17,9 +28,16 @@ export default function Video() {
 
     if (isError) {
         return (
-            <Container>
-                <ErrorText>동영상을 불러오는데 실패했습니다.</ErrorText>
-            </Container>
+            <ScrollView
+                contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
+                }
+            >
+                <Container>
+                    <ErrorText>동영상을 불러오는데 실패했습니다.</ErrorText>
+                </Container>
+            </ScrollView>
         );
     }
 
@@ -27,18 +45,31 @@ export default function Video() {
 
     if (videos.length === 0) {
         return (
-            <Container>
-                <ErrorText>동영상이 없습니다.</ErrorText>
-            </Container>
+            <ScrollView
+                contentContainerStyle={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
+                }
+            >
+                <Container>
+                    <ErrorText>동영상이 없습니다.</ErrorText>
+                </Container>
+            </ScrollView>
         );
     }
 
     return (
-        <Container>
-            {videos.map((video) => (
-                <LiveElem key={video.streamId} video={video} />
-            ))}
-        </Container>
+        <ScrollView
+            refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
+            }
+        >
+            <Container>
+                {videos.map((video) => (
+                    <LiveElem key={video.streamId} video={video} />
+                ))}
+            </Container>
+        </ScrollView>
     )
 }
 

@@ -15,20 +15,46 @@ export function useVideoPlayerControls({
 }: UseVideoPlayerControlsOptions) {
   const [playerError, setPlayerError] = useState<string | null>(null);
   
-  const player = useVideoPlayer(source || '', (player: VideoPlayer) => {
-    if (source) {
+  // URL 유효성 검사 함수
+  const isValidUrl = (url: string | null | undefined): boolean => {
+    if (!url || url.trim() === '') return false;
+    try {
+      const urlObj = new URL(url);
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  };
+  
+  // 유효한 소스가 있을 때만 플레이어 초기화
+  // 더미 URL을 사용하여 플레이어를 초기화하되, 실제 URL이 준비될 때까지 업데이트하지 않음
+  const validSource = isValidUrl(source) ? source : null;
+  const dummySource = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+  
+  const player = useVideoPlayer(validSource || dummySource, (player: VideoPlayer) => {
+    if (validSource) {
       try {
         player.loop = !isLive; // 라이브 스트림은 반복하지 않음
-        console.log('Video player initialized with source:', source, 'isLive:', isLive);
+        console.log('Video player initialized with source:', validSource, 'isLive:', isLive);
         
         // 에러 리스너 추가
         const statusListener = player.addListener('statusChange', (status) => {
           console.log('Player status:', status);
           if (status.error) {
+            // 더미 URL로 인한 오류는 무시
+            if (!validSource) {
+              return;
+            }
             console.error('Player error:', status.error);
-            setPlayerError(status.error.message || String(status.error));
+            const errorMessage = status.error.message || String(status.error);
+            // 특정 오류 메시지를 더 사용자 친화적으로 변환
+            if (errorMessage.includes('Failed to load') || errorMessage.includes('could not be completed')) {
+              setPlayerError('비디오를 불러올 수 없습니다. 네트워크 연결을 확인해주세요.');
+            } else {
+              setPlayerError(errorMessage);
+            }
           }
-          
+        
           // 플레이어가 준비되면 재생
           if (status.status === 'readyToPlay') {
             try {
@@ -67,8 +93,23 @@ export function useVideoPlayerControls({
 
   // 소스가 변경되면 플레이어 업데이트
   useEffect(() => {
-    if (!player || !source) {
+    if (!player) {
       return;
+    }
+    
+    // 유효한 소스가 없으면 업데이트하지 않음
+    if (!validSource) {
+      return;
+    }
+    
+    // 현재 플레이어의 소스와 동일하면 업데이트하지 않음
+    try {
+      const currentSource = (player as any).source;
+      if (currentSource === validSource) {
+        return;
+      }
+    } catch (error) {
+      // 소스를 확인할 수 없으면 계속 진행
     }
 
     // 플레이어가 유효한지 확인
@@ -83,10 +124,21 @@ export function useVideoPlayerControls({
     }
 
     try {
-      console.log('Updating video player with source:', source, 'isLive:', isLive);
+      console.log('Updating video player with source:', validSource, 'isLive:', isLive);
       setPlayerError(null);
-      player.replace(source);
-      player.loop = !isLive;
+      
+      // 플레이어가 현재 더미 소스를 사용 중이면 즉시 교체
+      try {
+        const currentSource = (player as any).source;
+        if (currentSource === dummySource || currentSource !== validSource) {
+          player.replace(validSource);
+          player.loop = !isLive;
+        }
+      } catch {
+        // 소스를 확인할 수 없으면 그냥 교체
+        player.replace(validSource);
+        player.loop = !isLive;
+      }
       
       // 플레이어 상태 확인 후 재생
       let status: string | undefined;
@@ -150,7 +202,7 @@ export function useVideoPlayerControls({
       console.error('Error updating video player:', error);
       setPlayerError(String(error));
     }
-  }, [source, isLive, player]);
+  }, [validSource, isLive, player]);
 
   const { isPlaying } = useEvent(player, 'playingChange', {
     isPlaying: player?.playing ?? false,

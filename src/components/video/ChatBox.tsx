@@ -6,6 +6,7 @@ import type { ThemeProps } from '@/theme/types';
 import Text from '@/components/ui/Text';
 import ChatMessages from './ChatMessages';
 import { LaughIcon, SendIcon } from 'lucide-react-native';
+import { useStreamViewer } from '@/hooks/useStreamViewer';
 
 export interface ChatMessage {
   id: string;

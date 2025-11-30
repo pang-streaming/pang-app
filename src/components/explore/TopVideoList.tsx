@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Dimensions, Animated, Image } from 'react-native';
+import { Dimensions, Animated, Image, TouchableOpacity } from 'react-native';
 import Text from '@/components/ui/Text';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Card from '@/components/ui/Card';
 import axios from 'axios';
+import { useRouter } from 'expo-router';
 
 type StreamItem = {
   nickname: string;
@@ -20,6 +21,7 @@ type StreamItem = {
 type TopVideoListProps = {
   itemWidthRatio?: number;
   itemSpacing?: number;
+  items?: StreamItem[];
 };
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -27,7 +29,9 @@ const { width: screenWidth } = Dimensions.get('window');
 export default function TopVideoList({
   itemWidthRatio = 0.8,
   itemSpacing = 5,
+  items: propItems,
 }: TopVideoListProps) {
+  const router = useRouter();
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
   const { ITEM_WIDTH, ITEM_HEIGHT, ITEM_SIZE, H_PADDING } = useMemo(() => {
@@ -40,17 +44,21 @@ export default function TopVideoList({
 
   const [items, setItems] = useState<StreamItem[]>([]);
 
-  useEffect(() => { 
-    axios.get("https://pang-api.euns.dev/stream").then((res) => {
+  useEffect(() => {
+    if (propItems) {
+      setItems(propItems);
+    } else {
+      axios.get("https://pang-api.euns.dev/stream").then((res) => {
         console.log(res.data.data);
         setItems(res.data.data);
-    }).catch((error) => {
+      }).catch((error) => {
         console.error('API 호출 오류:', error);
-    });
-  }, []);
+      });
+    }
+  }, [propItems]);
 
   return (
-    <Container height={ITEM_HEIGHT}>
+    <Container onPress={()=>{}} height={ITEM_HEIGHT}>
       <Animated.ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -82,46 +90,53 @@ export default function TopVideoList({
           });
 
           return (
-            <Card
+            <TouchableOpacity
               key={item.streamId}
-              width={ITEM_WIDTH}
-              height={ITEM_HEIGHT}
-              marginRight={itemSpacing}
-              scale={scale}
-              opacity={opacity}
+              activeOpacity={0.9}
+              onPress={() => {
+                router.push(`/stream-viewer?streamId=${item.streamId}`);
+              }}
             >
-              <ThumbnailImage source={{ uri: item.thumbnail }} />
-              <TopOverlay>
-                <LiveIconContainer>
-                  <LiveIcon />
-                  <Text size={12} weight="600" color="white">
-                    {item.viewCount.toLocaleString()}명  
-                  </Text>  
-                </LiveIconContainer>
-              </TopOverlay>
-              <TitleOverlay>
-                <LinearGradient
-                  colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '200%',
-                    borderRadius: 12,
-                  }}
-                />
-                <TitleText numberOfLines={2}>{item.title}</TitleText>
-                <UserInfo>
-                  <ProfileImage 
-                    source={{ 
-                      uri: item.profileImage || 'https://via.placeholder.com/30x30' 
-                    }} 
+              <Card
+                width={ITEM_WIDTH}
+                height={ITEM_HEIGHT}
+                marginRight={itemSpacing}
+                scale={scale}
+                opacity={opacity}
+              >
+                <ThumbnailImage source={{ uri: item.thumbnail }} />
+                <TopOverlay>
+                  <LiveIconContainer>
+                    <LiveIcon />
+                    <Text size={12} weight="600" color="white">
+                      {item.viewCount.toLocaleString()}명  
+                    </Text>  
+                  </LiveIconContainer>
+                </TopOverlay>
+                <TitleOverlay>
+                  <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '200%',
+                      borderRadius: 12,
+                    }}
                   />
-                  <NicknameText>{item.nickname}</NicknameText>
-                </UserInfo>
-              </TitleOverlay>
-            </Card>
+                  <TitleText numberOfLines={2}>{item.title}</TitleText>
+                  <UserInfo>
+                    <ProfileImage 
+                      source={item.profileImage ? { 
+                        uri: item.profileImage 
+                      } : require('@/assets/null-profile.png')} 
+                    />
+                    <NicknameText>{item.nickname}</NicknameText>
+                  </UserInfo>
+                </TitleOverlay>
+              </Card>
+            </TouchableOpacity>
           );
         })}
       </Animated.ScrollView>
@@ -133,9 +148,8 @@ interface ContainerProps {
   height: number;
 }
 
-const Container = styled.View<ContainerProps>`
+const Container = styled.Pressable<ContainerProps>`
   margin-bottom: 20px;
-  height: ${(props:ContainerProps) => props.height + 30}px;
 `;
 
 const ThumbnailImage = styled.Image`

@@ -10,9 +10,15 @@ export const fetchMyInfo = async (): Promise<UserResponse> => {
 
 
 
-export const uploadImage = async (file: File) => {
-  const formData = new FormData();
-  formData.append("image", file); 
+export const uploadImage = async (file: File | FormData) => {
+  let formData: FormData;
+  
+  if (file instanceof FormData) {
+    formData = file;
+  } else {
+    formData = new FormData();
+    formData.append("image", file);
+  }
 
   const res = await api.post("/post/image", formData, {
     headers: {

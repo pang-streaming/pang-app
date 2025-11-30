@@ -1,72 +1,27 @@
 import AuthTextField from "@/components/auth/AuthTextField";
 import User from "@/components/icons/User";
-import { useState, useEffect } from "react";
-import { Text, View, Image, TouchableOpacity, Alert, ActivityIndicator } from "react-native";
+import { Text, View, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChevronLeft from "@/assets/chevron-left.svg";
 import Camera from '@/assets/camera.svg';
 import styled from "styled-components/native";
 import { useRouter } from "expo-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { fetchMyInfo, updateMyInfo } from "@/entities/user/api";
+import { useEdit } from "@/features/edit-profile/useEdit";
 import type { ThemeProps } from "@/theme/types";
 
 export default function EditProfileScreen() {
-  const [nickname, setNickname] = useState("");
-  const [profileImageUrl, setProfileImageUrl] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const router = useRouter();
-  const queryClient = useQueryClient();
-
-  const { data, isLoading } = useQuery({
-    queryKey: ["myInfo"],
-    queryFn: fetchMyInfo,
-    staleTime: 1000 * 60,
-    refetchOnWindowFocus: false,
-  });
-
-  const user = data?.data;
-
-  useEffect(() => {
-    if (user) {
-      setNickname(user.nickname || "");
-      setProfileImageUrl(user.profileImage || "");
-    }
-  }, [user]);
-
-  const handleComplete = async () => {
-    if (!nickname.trim()) {
-      Alert.alert("오류", "닉네임을 입력해주세요.");
-      return;
-    }
-
-    setIsSaving(true);
-    try {
-      await updateMyInfo(
-        nickname.trim(),
-        undefined,
-        undefined,
-        profileImageUrl || undefined,
-        undefined,
-        undefined
-      );
-      
-      // React Query 캐시 무효화하여 업데이트 반영
-      await queryClient.invalidateQueries({ queryKey: ["myInfo"] });
-      
-      Alert.alert("성공", "프로필이 수정되었습니다.", [
-        { text: "확인", onPress: () => router.back() }
-      ]);
-    } catch (error: any) {
-      console.error("프로필 수정 오류:", error);
-      Alert.alert(
-        "수정 실패",
-        error.response?.data?.message || error.message || "프로필 수정 중 오류가 발생했습니다."
-      );
-    } finally {
-      setIsSaving(false);
-    }
-  };
+  const {
+    nickname,
+    setNickname,
+    profileImageUrl,
+    setProfileImageUrl,
+    isSaving,
+    isLoading,
+    isUploading,
+    handleComplete,
+    handleImageUpload,
+  } = useEdit();
 
   if (isLoading) {
     return (
@@ -97,8 +52,12 @@ export default function EditProfileScreen() {
           ) : (
             <ProfileImagePlaceholder />
           )}
-          <IconWrapper>
-            <Camera width={20} height={20} />
+          <IconWrapper onPress={handleImageUpload} disabled={isUploading}>
+            {isUploading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Camera width={20} height={20} />
+            )}
           </IconWrapper>
         </ProfileImageContainer>
         <AuthTextField
@@ -203,7 +162,7 @@ const Note = styled(Text)<ThemeProps>`
   color: ${({ theme }: ThemeProps) => theme.colors.primary.normal};
 `;
 
-const IconWrapper = styled(TouchableOpacity)<ThemeProps>`
+const IconWrapper = styled(TouchableOpacity)<{ disabled?: boolean } & ThemeProps>`
   width: 30px;
   height: 30px;
   position: absolute;
@@ -213,4 +172,5 @@ const IconWrapper = styled(TouchableOpacity)<ThemeProps>`
   background-color: ${({ theme }: ThemeProps) => theme.colors.stroke.normal};
   justify-content: center;
   align-items: center;
+  opacity: ${({ disabled }: { disabled?: boolean }) => disabled ? 0.5 : 1};
 `;

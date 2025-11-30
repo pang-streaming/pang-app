@@ -10,7 +10,7 @@ export const LiveChip = ({ viewerCount }: LiveChipProps) => {
   return (
     <ChipWrap>
       <RedDot />
-      <ChipText>{viewerCount.toLocaleString()}</ChipText>
+      <ChipText>{viewerCount.toLocaleString()}명</ChipText>
     </ChipWrap>
   );
 };

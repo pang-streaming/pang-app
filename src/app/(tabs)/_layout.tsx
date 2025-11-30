@@ -5,13 +5,14 @@ import { useTheme } from "styled-components/native";
 import Menu from "@/assets/tab-icons/menu";
 import Explore from "@/assets/tab-icons/explore";
 import Heart from "@/assets/tab-icons/heart";
+import Charge from "@/assets/tab-icons/charge";
 export default function TabLayout() {
   const theme = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        animation: "fade",
+        animation: "none",
         tabBarStyle: {
           paddingTop: 6,
           backgroundColor: theme.colors.background.normal,
@@ -44,7 +45,7 @@ export default function TabLayout() {
           headerShown: false,
           title: "충전",
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="heart-outline" size={size} color={color} />
+            <Charge color={color} />
           ),
         }}
       />

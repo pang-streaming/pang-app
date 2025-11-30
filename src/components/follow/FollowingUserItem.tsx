@@ -2,7 +2,6 @@ import { View, Text, Image, Pressable, TouchableOpacity } from 'react-native';
 import styled from 'styled-components/native';
 import type { ThemeProps } from '@/theme/types';
 import type { Follow } from '@/features/follow/type';
-
 interface FollowingUserItemProps {
   user: Follow;
   onPress?: () => void;
@@ -12,14 +11,14 @@ export default function FollowingUserItem({ user, onPress }: FollowingUserItemPr
   return (
     <Container onPress={onPress}>
       <UserInfo>
-        {user.image ? (
-          <ProfileImage source={{ uri: user.image }} />
-        ) : (
-          <ProfileImagePlaceholder />
-        )}
+      {user.image ? (
+            <ProfileImage source={{ uri: user.image }} />
+          ) : (
+            <ProfileImage source={require('@/assets/null-profile.png')} />
+          )}
         <UserDetails>
           <Nickname>{user.nickname}</Nickname>
-          <FollowerCount>팔로워 {user.follower.toLocaleString()}</FollowerCount>
+          <FollowerCount>팔로워 {user.follower.toLocaleString()}명</FollowerCount>
         </UserDetails>
       </UserInfo>
     </Container>

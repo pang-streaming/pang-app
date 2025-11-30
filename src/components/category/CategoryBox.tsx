@@ -1,6 +1,7 @@
 import { View, Dimensions } from "react-native";
 import styled, { ThemeProps } from "styled-components/native";
 import { LiveChip } from "../ui/LiveChip";
+import { useRouter } from "expo-router";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CONTAINER_PADDING = 16 * 3; 
@@ -11,14 +12,16 @@ interface CategoryBoxProps {
   image: string;
   categoryName: string;
   liveCount: number;
-viewerCount: number
+  viewerCount: number;
+  categoryId: number;
 }
 
 export default function CategoryBox({
-  categoryName,liveCount,viewerCount,image
+  categoryName,liveCount,viewerCount,image, categoryId
 }: CategoryBoxProps) {
+  const router = useRouter()
   return (
-    <Container>
+    <Container onPress={() => {router.push(`/(home)/category-detail?categoryId=${categoryId}&categoryName=${encodeURIComponent(categoryName)}&categoryImage=${encodeURIComponent(image)}`)}}>
       <Image source={{ uri: image }}>
         <LiveChip viewerCount={viewerCount} />
       </Image>
@@ -28,7 +31,7 @@ export default function CategoryBox({
   );
 }
 
-const Container = styled.View`
+const Container = styled.TouchableOpacity`
   width: ${ITEM_WIDTH}px;
 `;
 
