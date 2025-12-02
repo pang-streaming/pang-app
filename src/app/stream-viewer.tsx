@@ -17,7 +17,7 @@ import { Alert, ActivityIndicator, View, Text } from 'react-native';
 import { useMemo, useEffect } from 'react';
 import BombModal from '@/components/modal/bomb-modal/index';
 
-const videoSource =
+const FALLBACK_VIDEO_SOURCE =
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 export default function StreamViewer() {
@@ -50,7 +50,8 @@ export default function StreamViewer() {
     if (streamData?.url && streamData.url.trim() !== '') {
       return streamData.url;
     }
-    return null;
+    // URL이 없으면 폴백 비디오 사용
+    return FALLBACK_VIDEO_SOURCE;
   }, [streamData?.url]);
 
   const { player, error: playerError } = useVideoPlayerControls({

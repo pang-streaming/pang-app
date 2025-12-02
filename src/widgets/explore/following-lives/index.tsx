@@ -13,24 +13,9 @@ export const FollowingLivesSection = () => {
   const router = useRouter();
   const setSelectedTabCategory = useCategoryStore((s) => s.setSelectedTabCategory);
   
-  // 더미 데이터 생성
-  const dummyData = useMemo<IStreamDataResponse[]>(() => {
-    return Array.from({ length: 10 }, (_, index) => ({
-      streamId: `dummy-${index}`,
-      title: `더미 라이브 제목 ${index + 1}`,
-      url: `https://picsum.photos/seed/stream${index}/400/600`,
-      userId: `user-${index}`,
-      username: `user${index}`,
-      nickname: `스트리머${index + 1}`,
-      profileImage: `https://picsum.photos/seed/profile${index}/100/100`,
-      followers: Math.floor(Math.random() * 10000),
-      thumbnail: `https://picsum.photos/seed/thumbnail${index}/400/600`,
-      viewCount: Math.floor(Math.random() * 5000),
-    }));
-  }, []);
 
   // 실제 데이터가 없으면 더미 데이터 사용
-  const displayData = data && data.length > 0 ? data : dummyData;
+  
 
   const handleMorePress = () => {
     setSelectedTabCategory("라이브");
@@ -59,12 +44,13 @@ export const FollowingLivesSection = () => {
       ) : isError ? (
         <EmptyText>데이터를 불러올 수 없습니다</EmptyText>
       ) : (
+        data && data.length === 0 ? (<EmptyText>팔로잉 중인 채널의 라이브 방송이 없습니다</EmptyText>) : (
         <FollowingLiveScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ gap: 10, paddingRight: 20 }}
         >
-          {displayData.map((d) => (
+          {data?.map((d) => (
             <FollowingLiveElem
               key={d.streamId}
               streamId={d.streamId}
@@ -74,8 +60,9 @@ export const FollowingLivesSection = () => {
               title={d.title}
             />
           ))}
+          
         </FollowingLiveScrollView>
-      )}
+      ))}
     </Container>
   );
 };
