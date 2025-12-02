@@ -1,11 +1,13 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Dimensions, Animated, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
+import { Dimensions, Animated, Image, TouchableOpacity, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import Text from '@/components/ui/Text';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Card from '@/components/ui/Card';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { useVideoPlayer } from 'expo-video';
+import { VideoView } from 'expo-video';
 
 type StreamItem = {
   nickname: string;
@@ -27,6 +29,38 @@ type TopVideoListProps = {
 
 const { width: screenWidth } = Dimensions.get('window');
 
+// 선택된 아이템의 비디오를 재생하는 컴포넌트
+const VideoPlayerItem = ({ url, isActive }: { url: string; isActive: boolean }) => {
+  const player = useVideoPlayer(url, (player) => {
+    player.loop = true;
+    player.muted = true; // 메인 화면에서는 음소거
+  });
+
+  useEffect(() => {
+    if (!player) return;
+    try {
+      if (isActive) {
+        player.play();
+      } else {
+        player.pause();
+      }
+    } catch (error) {
+      console.warn('Player control error:', error);
+    }
+  }, [isActive, player]);
+
+  if (!isActive) return null;
+
+  return (
+    <VideoView
+      player={player}
+      style={{ width: '100%', height: '100%', borderRadius: 12 }}
+      contentFit="cover"
+      nativeControls={false}
+    />
+  );
+};
+
 export default function TopVideoList({
   itemWidthRatio = 0.8,
   itemSpacing = 5,
@@ -35,6 +69,7 @@ export default function TopVideoList({
 }: TopVideoListProps) {
   const router = useRouter();
   const scrollX = React.useRef(new Animated.Value(0)).current;
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const { ITEM_WIDTH, ITEM_HEIGHT, ITEM_SIZE, H_PADDING } = useMemo(() => {
     const w = screenWidth * itemWidthRatio;
@@ -45,6 +80,15 @@ export default function TopVideoList({
   }, [itemWidthRatio, itemSpacing]);
 
   const [items, setItems] = useState<StreamItem[]>([]);
+
+  // 스크롤 위치에 따라 활성 인덱스 계산
+  const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(offsetX / ITEM_SIZE);
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < items.length) {
+      setActiveIndex(newIndex);
+    }
+  }, [ITEM_SIZE, activeIndex, items.length]);
 
   useEffect(() => {
     if (propItems) {
@@ -70,8 +114,9 @@ export default function TopVideoList({
             decelerationRate="fast"
             onScroll={Animated.event(
               [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: false }
+              { useNativeDriver: false, listener: handleScroll }
             )}
+            scrollEventThrottle={16}
             contentContainerStyle={{ paddingHorizontal: H_PADDING }}
           >
             {items.map((item, index) => {
@@ -110,7 +155,12 @@ export default function TopVideoList({
                     scale={scale}
                     opacity={opacity}
                   >
-                    <ThumbnailImage source={{ uri: item.thumbnail }} />
+                    {/* 선택된 아이템에만 비디오 재생, 나머지는 썸네일 */}
+                    {index === activeIndex && item.url ? (
+                      <VideoPlayerItem url={item.url} isActive={index === activeIndex} />
+                    ) : (
+                      <ThumbnailImage source={{ uri: item.thumbnail }} />
+                    )}
                     <TopOverlay>
                       <LiveIconContainer>
                         <LiveIcon />
