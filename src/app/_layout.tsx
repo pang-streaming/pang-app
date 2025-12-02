@@ -9,6 +9,7 @@ import { darkTheme, lightTheme } from '@/theme/theme';
 import { useThemeStore } from '@/stores/useThemeStore';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/queryClient';
+import { SocketProvider } from '@/features/chat/socket-provider';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -43,8 +44,9 @@ function ThemedAppWrapper() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
-        <StatusBar style={effectiveMode === 'dark' ? 'light' : 'dark'} translucent backgroundColor="transparent" />
-        <Stack>
+        <SocketProvider>
+          <StatusBar style={effectiveMode === 'dark' ? 'light' : 'dark'} translucent backgroundColor="transparent" />
+          <Stack>
           <Stack.Screen 
             name="stream-viewer" 
             options={{ 
@@ -63,7 +65,8 @@ function ThemedAppWrapper() {
           <Stack.Screen name="clip-scroll" options={{ headerShown: false }} />
           <Stack.Screen name="post-detail" options={{ headerShown: false }} />
 
-        </Stack>
+          </Stack>
+        </SocketProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

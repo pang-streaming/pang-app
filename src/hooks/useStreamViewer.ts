@@ -1,13 +1,52 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 import type { ChatMessage } from '@/types/chat';
+import { useChat, type ChatItem } from '@/features/chat/use-chat';
 
 interface UseStreamViewerOptions {
   showControlsWithAnimation: () => void;
   isFullscreen: boolean;
+  streamId: string;
+  username: string;
 }
 
-export function useStreamViewer({ showControlsWithAnimation, isFullscreen }: UseStreamViewerOptions) {
+// ChatItem을 ChatMessage로 변환하는 함수
+const convertChatItemToMessage = (item: ChatItem, index: number): ChatMessage => {
+  const uniqueId = `${item.type || 'message'}-${Date.now()}-${index}-${Math.random().toString(36).substr(2, 9)}`;
+  
+  if (item.type === 'sponsor') {
+    return {
+      id: uniqueId,
+      username: item.viewerName,
+      message: item.chatting,
+      timestamp: new Date(),
+      type: 'normal',
+      textColor: item.color,
+    };
+  }
+  
+  return {
+    id: uniqueId,
+    username: item.viewerName,
+    message: item.chatting,
+    timestamp: new Date(),
+    type: 'normal',
+    textColor: item.color,
+  };
+};
+
+export function useStreamViewer({ showControlsWithAnimation, isFullscreen, streamId, username }: UseStreamViewerOptions) {
+  console.log(username)
+  const { chatList, sendMessage: sendChatMessage } = useChat(username || '');
+  
+  useEffect(() => {
+    if (streamId) {
+      console.log('🔌 useStreamViewer: streamId 전달됨', streamId);
+    } else {
+      console.warn('⚠️ useStreamViewer: streamId가 없습니다');
+    }
+  }, [streamId]);
+  
   const [showBombModal, setShowBombModal] = useState(false);
   const [videoPlayerHeight, setVideoPlayerHeight] = useState(0);
   const [videoPlayerWidth, setVideoPlayerWidth] = useState(0);
@@ -18,52 +57,11 @@ export function useStreamViewer({ showControlsWithAnimation, isFullscreen }: Use
   const [viewerCount] = useState(17);
   const [streamingTime] = useState('02:01:07');
   const [followerCount] = useState(3);
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
-    {
-      id: 'sub1',
-      username: '대듀08',
-      message: '',
-      timestamp: new Date(),
-      type: 'subscription',
-      subscriptionMonths: 37,
-    },
-    {
-      id: '1',
-      username: '감귤상은',
-      message: '감귤상은 하이',
-      timestamp: new Date(),
-      type: 'normal',
-    },
-    {
-      id: '2',
-      username: '엔레고러브',
-      message: '오빠안녕',
-      timestamp: new Date(),
-      type: 'normal',
-    },
-    {
-      id: 'filter1',
-      username: '시스템',
-      message: '쾌적한 시청 환경을 위해 일부 메시지는 필터링 됩니다. 클린 라이브 채팅 문화를 만들기에 동참해 주세요!',
-      timestamp: new Date(),
-      type: 'filter-notice',
-    },
-    {
-      id: '3',
-      username: '감귤',
-      message: '감귤 하이',
-      timestamp: new Date(),
-      type: 'normal',
-    },
-    {
-      id: '4',
-      username: '대구에듀',
-      message: '대구에듀 하이',
-      timestamp: new Date(),
-      type: 'normal',
-      textColor: '#4A9EFF',
-    },
-  ]);
+  
+  // ChatItem을 ChatMessage로 변환
+  const chatMessages = useMemo<ChatMessage[]>(() => {
+    return chatList.map((item, index) => convertChatItemToMessage(item, index));
+  }, [chatList]);
 
   showControlsRef.current = showControlsWithAnimation;
 
@@ -89,14 +87,8 @@ export function useStreamViewer({ showControlsWithAnimation, isFullscreen }: Use
     // 구독 로직
   };
 
-  const handleSendMessage = (message: string) => {
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      username: '나',
-      message,
-      timestamp: new Date(),
-    };
-    setChatMessages(prev => [...prev, newMessage]);
+  const handleSendMessage = async (message: string) => {
+    await sendChatMessage(message);
   };
 
   return {

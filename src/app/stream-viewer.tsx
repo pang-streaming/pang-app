@@ -50,7 +50,6 @@ export default function StreamViewer() {
     if (streamData?.url && streamData.url.trim() !== '') {
       return streamData.url;
     }
-    // URL이 없으면 폴백 비디오 사용
     return FALLBACK_VIDEO_SOURCE;
   }, [streamData?.url]);
 
@@ -95,7 +94,6 @@ export default function StreamViewer() {
       }
     );
   };
-  // 라이브일 때만 useStreamViewer 사용 (채팅, 뷰어 수 등)
   const {
     showBombModal,
     setShowBombModal,
@@ -110,11 +108,15 @@ export default function StreamViewer() {
     handleVideoPlayerLayout,
     handleSubscribe,
     handleSendMessage,
-  } = useStreamViewer({ showControlsWithAnimation, isFullscreen });
-  
-  // 동영상일 때는 기본값 사용
-  const videoViewCount = isVideo ? 0 : viewerCount; // 동영상 조회수는 별도로 받아야 함
-  const videoUploadDate = isVideo ? '' : streamingTime; // 동영상 업로드 날짜는 별도로 받아야 함
+  } = useStreamViewer({ 
+    showControlsWithAnimation, 
+    isFullscreen,
+    streamId: streamId || streamData?.streamId || '',
+    username: streamData?.username ?? 'user'
+  });
+
+  const videoViewCount = isVideo ? 0 : viewerCount; 
+  const videoUploadDate = isVideo ? '' : streamingTime; 
 
   const handleFullscreen = () => {
     enterFullscreen();
@@ -166,7 +168,6 @@ export default function StreamViewer() {
       {!isFullscreen && (
         <>
           {isVideo ? (
-            // 동영상 UI
             <VideoContent
               showVideoInfo={showVideoInfo}
               videoInfoStyle={videoInfoStyle}
@@ -181,7 +182,6 @@ export default function StreamViewer() {
               isFollowing={isFollowing}
             />
           ) : (
-            // 라이브 UI
             <StreamContent
               showVideoInfo={showVideoInfo}
               videoInfoStyle={videoInfoStyle}
@@ -202,7 +202,6 @@ export default function StreamViewer() {
         </>
       )}
       
-      {/* 라이브일 때만 BombModal 표시 */}
       {!isVideo && (
         <BombModal
           visible={showBombModal}

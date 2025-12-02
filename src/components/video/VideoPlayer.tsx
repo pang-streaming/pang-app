@@ -37,7 +37,6 @@ export default function VideoPlayer({
   const insets = useSafeAreaInsets();
   const videoViewRef = useRef<any>(null);
 
-  // Picture-in-Picture 모드 진입
   const handleEnterPictureInPicture = async () => {
     try {
       console.log('PiP 버튼 클릭됨');
@@ -45,12 +44,10 @@ export default function VideoPlayer({
       console.log('Player exists:', !!player);
       console.log('VideoViewRef exists:', !!videoViewRef.current);
       
-      // VideoView ref를 통한 시도 (가장 우선)
       if (videoViewRef.current) {
         const videoView = videoViewRef.current as any;
         console.log('VideoView methods:', Object.keys(videoView || {}));
         
-        // 가능한 모든 메서드 이름 시도
         const methods = [
           'startPictureInPicture',
           'enterPictureInPicture',
@@ -96,10 +93,8 @@ export default function VideoPlayer({
         }
       }
       
-      // Android의 경우 Activity의 enterPictureInPictureMode 사용
       if (Platform.OS === 'android') {
         try {
-          // expo-video의 네이티브 모듈 확인
           const expoVideoModule = NativeModules.ExpoVideoModule || NativeModules.ExpoVideo;
           if (expoVideoModule && typeof expoVideoModule.enterPictureInPictureMode === 'function') {
             await expoVideoModule.enterPictureInPictureMode();
@@ -111,7 +106,6 @@ export default function VideoPlayer({
         }
       }
       
-      // 모든 방법이 실패한 경우
       console.warn('Picture-in-Picture 메서드를 찾을 수 없습니다.');
       console.log('VideoViewRef 상세:', videoViewRef.current);
       console.log('Player 상세:', player);
@@ -120,14 +114,11 @@ export default function VideoPlayer({
     }
   };
 
-  // 플레이어가 초기화되지 않았으면 렌더링하지 않음
   if (!player) {
     return null;
   }
 
-  // 플레이어가 안전하게 접근 가능한지 확인
   try {
-    // 플레이어 객체가 유효한지 확인 (에러가 발생하지 않으면 유효)
     if (typeof player !== 'object') {
       return null;
     }
