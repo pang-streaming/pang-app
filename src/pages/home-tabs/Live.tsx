@@ -85,7 +85,7 @@ export default function Live() {
 
 const Container = styled.View`
     width: 100%;
-    padding: 0 20px;
+    padding: 20px;
     gap: 10px;
     flex-direction: column;
     justify-content: center;

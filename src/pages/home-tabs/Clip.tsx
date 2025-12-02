@@ -40,7 +40,7 @@ export default function Clip() {
 }
 
 const Container = styled.View`
-    padding: 0 20px;
+    padding: 20px 20px;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 10px;

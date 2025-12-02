@@ -21,7 +21,7 @@ export default function ChatMessages({
   const [scrollViewHeight, setScrollViewHeight] = useState(0);
 
   const checkIfAtBottom = (contentHeight: number, scrollViewHeight: number, scrollY: number) => {
-    const threshold = 50; // 50px 여유를 둠
+    const threshold = 50;
     return contentHeight - scrollViewHeight - scrollY <= threshold;
   };
 
@@ -44,7 +44,6 @@ export default function ChatMessages({
 
   useEffect(() => {
     if (messages.length > 0 && isAtBottom) {
-      // 약간의 딜레이를 두어 레이아웃이 완료된 후 스크롤
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
@@ -123,9 +122,14 @@ export default function ChatMessages({
 
           return (
             <MessageItem key={msg.id}>
-              <MessageText color={msg.textColor || '#FFFFFF'}>
-                {msg.message}
-              </MessageText>
+              <MessageContent>
+                <UsernameText color={msg.textColor || '#FFFFFF'}>
+                  {msg.username}:
+                </UsernameText>
+                <MessageText>
+                  {' '}{msg.message}
+                </MessageText>
+              </MessageContent>
             </MessageItem>
           );
         })
@@ -151,8 +155,19 @@ const MessageItem = styled.View`
   padding: 0;
 `
 
-const MessageText = styled(Text)<{ color?: string }>`
+const MessageContent = styled.View`
+  flex-direction: row;
+  flex-wrap: wrap;
+`
+
+const MessageText = styled(Text)`
   font-size: 14px;
+  color: ${({ theme }: ThemeProps) => theme.colors.text.normal};
+`
+
+const UsernameText = styled(Text)<{ color?: string }>`
+  font-size: 14px;
+  font-weight: 600;
   color: ${({ color }: { color?: string }) => color || '#FFFFFF'};
 `
 
