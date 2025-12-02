@@ -14,7 +14,7 @@ export default function Explore({ color }: Props) {
       <Path
         d="M9.16406 2.15625H3.05469C2.55849 2.15625 2.15625 2.55849 2.15625 3.05469V9.16406C2.15625 9.66026 2.55849 10.0625 3.05469 10.0625H9.16406C9.66026 10.0625 10.0625 9.66026 10.0625 9.16406V3.05469C10.0625 2.55849 9.66026 2.15625 9.16406 2.15625Z"
         stroke={stroke}
-        strokeWidth={2}
+      strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
       />

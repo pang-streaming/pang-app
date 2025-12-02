@@ -21,7 +21,7 @@ export default function Category() {
 
 const Container = styled(View)`
     width: 100%;
-    padding: 0 16px;
+    padding: 16px 16px;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 10px;

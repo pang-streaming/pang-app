@@ -16,6 +16,7 @@ interface VideoInfoProps {
   isFollowing?: boolean;
   onFollow?: () => void;
   onSubscribe?: () => void;
+  isVideo?: boolean; // 동영상인지 라이브인지 구분
 }
 
 export default function VideoInfo({
@@ -30,6 +31,7 @@ export default function VideoInfo({
   isFollowing = false,
   onFollow,
   onSubscribe,
+  isVideo = false,
 }: VideoInfoProps) {
   const formatTime = (time: string) => {
     return time;
@@ -60,12 +62,27 @@ export default function VideoInfo({
       )}
 
       <StatsContainer>
-        <Text size={12} weight="400" color="#A3A3A3">
-          {viewerCount}명 시청 중
-        </Text>
-        <Text size={12} weight="400" color="#A3A3A3">
-          {formatTime(streamingTime)} 스트리밍 중
-        </Text>
+        {isVideo ? (
+          <>
+            <Text size={12} weight="400" color="#A3A3A3">
+              조회수 {viewerCount?.toLocaleString() || 0}
+            </Text>
+            {streamingTime && (
+              <Text size={12} weight="400" color="#A3A3A3">
+                {streamingTime}
+              </Text>
+            )}
+          </>
+        ) : (
+          <>
+            <Text size={12} weight="400" color="#A3A3A3">
+              {viewerCount}명 시청 중
+            </Text>
+            <Text size={12} weight="400" color="#A3A3A3">
+              {formatTime(streamingTime)} 스트리밍 중
+            </Text>
+          </>
+        )}
       </StatsContainer>
 
       <StreamerSection>

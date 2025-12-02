@@ -25,7 +25,7 @@ const HOME_CATEGORIES: Category[] = [
   "클립",
 ];
 const FOLLOWING_CATEGORIES: string[] = ["전체", "라이브"];
-const CHARGE_CATEGORIES: string[] = ["충전", "사용내역", "구매내역"];
+const CHARGE_CATEGORIES: string[] = ["충전", "사용내ㅇ역", "구매내역"];
 
 type TabCategory = Category | string;
 
@@ -235,7 +235,7 @@ const SelectCategoryButtonText = styled(Text)<{ isActive?: boolean }>`
 
 const Container = styled.View`
   width: 100%;
-  padding: 15px;
+  padding: 0 15px;
   flex-direction: column;
   justify-content: center;
   align-content: space-between;

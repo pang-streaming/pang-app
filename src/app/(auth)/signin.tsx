@@ -89,10 +89,10 @@ export default function SiginInScreen() {
                     disabled={isLoading || !id || !password}
                 />
                 <DividerText/>            
-                <OAuthLoginButtonContainer>
+                {/* <OAuthLoginButtonContainer>
                     <OAuthLoginButton icon={<GoogleIcon/>}/>
                     <OAuthLoginButton icon={<AppleIcon/>}/>
-                </OAuthLoginButtonContainer>
+                </OAuthLoginButtonContainer> */}
                 <RegisterTextButton/>    
             </LoginItemContainer>
             <View />
