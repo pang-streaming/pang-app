@@ -22,6 +22,7 @@ type TopVideoListProps = {
   itemWidthRatio?: number;
   itemSpacing?: number;
   items?: StreamItem[];
+  isVideo?: boolean; // 동영상인지 라이브인지 구분
 };
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -30,6 +31,7 @@ export default function TopVideoList({
   itemWidthRatio = 0.8,
   itemSpacing = 5,
   items: propItems,
+  isVideo = false,
 }: TopVideoListProps) {
   const router = useRouter();
   const scrollX = React.useRef(new Animated.Value(0)).current;
@@ -57,91 +59,97 @@ export default function TopVideoList({
     }
   }, [propItems]);
 
-  return (
-    <Container onPress={()=>{}} height={ITEM_HEIGHT}>
-      <Animated.ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        snapToInterval={ITEM_SIZE}
-        decelerationRate="fast"
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }
-        )}
-        contentContainerStyle={{ paddingHorizontal: H_PADDING }}
-      >
-        {items.map((item, index) => {
-          const inputRange = [
-            (index - 1) * ITEM_SIZE,
-            index * ITEM_SIZE,
-            (index + 1) * ITEM_SIZE,
-          ];
 
-          const scale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.95, 1, 0.95],
-            extrapolate: 'clamp',
-          });
+  if (items.length !== 0) {
+    return (
+        <Container onPress={()=>{}} height={ITEM_HEIGHT}>
+          <Animated.ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            snapToInterval={ITEM_SIZE}
+            decelerationRate="fast"
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: false }
+            )}
+            contentContainerStyle={{ paddingHorizontal: H_PADDING }}
+          >
+            {items.map((item, index) => {
+              const inputRange = [
+                (index - 1) * ITEM_SIZE,
+                index * ITEM_SIZE,
+                (index + 1) * ITEM_SIZE,
+              ];
+    
+              const scale = scrollX.interpolate({
+                inputRange,
+                outputRange: [0.95, 1, 0.95],
+                extrapolate: 'clamp',
+              });
+    
+              const opacity = scrollX.interpolate({
+                inputRange,
+                outputRange: [0.6, 1, 0.6],
+                extrapolate: 'clamp',
+              });
+    
+              return (
+                <TouchableOpacity
+                  key={item.streamId}
+                  activeOpacity={0.9}
+                  onPress={() => {
+                    // 동영상일 때만 type=video 추가
+                    const typeParam = isVideo ? '&type=video' : '';
+                    router.push(`/stream-viewer?streamId=${item.streamId}${typeParam}`);
+                  }}
+                >
+                  <Card
+                    width={ITEM_WIDTH}
+                    height={ITEM_HEIGHT}
+                    marginRight={itemSpacing}
+                    scale={scale}
+                    opacity={opacity}
+                  >
+                    <ThumbnailImage source={{ uri: item.thumbnail }} />
+                    <TopOverlay>
+                      <LiveIconContainer>
+                        <LiveIcon />
+                        <Text size={12} weight="600" color="white">
+                          {item.viewCount.toLocaleString()}명  
+                        </Text>  
+                      </LiveIconContainer>
+                    </TopOverlay>
+                    <TitleOverlay>
+                      <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          height: '200%',
+                          borderRadius: 12,
+                        }}
+                      />
+                      <TitleText numberOfLines={2}>{item.title}</TitleText>
+                      <UserInfo>
+                        <ProfileImage 
+                          source={item.profileImage ? { 
+                            uri: item.profileImage 
+                          } : require('@/assets/null-profile.png')} 
+                        />
+                        <NicknameText>{item.nickname}</NicknameText>
+                      </UserInfo>
+                    </TitleOverlay>
+                  </Card>
+                </TouchableOpacity>
+              );
+            })}
+          </Animated.ScrollView>
+        </Container>
+    );
+  }
 
-          const opacity = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.6, 1, 0.6],
-            extrapolate: 'clamp',
-          });
-
-          return (
-            <TouchableOpacity
-              key={item.streamId}
-              activeOpacity={0.9}
-              onPress={() => {
-                router.push(`/stream-viewer?streamId=${item.streamId}`);
-              }}
-            >
-              <Card
-                width={ITEM_WIDTH}
-                height={ITEM_HEIGHT}
-                marginRight={itemSpacing}
-                scale={scale}
-                opacity={opacity}
-              >
-                <ThumbnailImage source={{ uri: item.thumbnail }} />
-                <TopOverlay>
-                  <LiveIconContainer>
-                    <LiveIcon />
-                    <Text size={12} weight="600" color="white">
-                      {item.viewCount.toLocaleString()}명  
-                    </Text>  
-                  </LiveIconContainer>
-                </TopOverlay>
-                <TitleOverlay>
-                  <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: '200%',
-                      borderRadius: 12,
-                    }}
-                  />
-                  <TitleText numberOfLines={2}>{item.title}</TitleText>
-                  <UserInfo>
-                    <ProfileImage 
-                      source={item.profileImage ? { 
-                        uri: item.profileImage 
-                      } : require('@/assets/null-profile.png')} 
-                    />
-                    <NicknameText>{item.nickname}</NicknameText>
-                  </UserInfo>
-                </TitleOverlay>
-              </Card>
-            </TouchableOpacity>
-          );
-        })}
-      </Animated.ScrollView>
-    </Container>
-  );
 }
 
 interface ContainerProps {

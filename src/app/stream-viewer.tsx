@@ -9,6 +9,7 @@ import { useStreamViewer } from '@/hooks/useStreamViewer';
 import { router, useLocalSearchParams } from 'expo-router';
 import VideoPlayer from '@/components/video/VideoPlayer';
 import StreamContent from '@/components/video/StreamContent';
+import VideoContent from '@/components/video/VideoContent';
 import { useStreamDetail } from '@/entities/stream/useStream';
 import { useFollowUser } from '@/features/follow/useFollow';
 import { useUsernameToInfo } from '@/entities/user/useUser';
@@ -16,12 +17,14 @@ import { Alert, ActivityIndicator, View, Text } from 'react-native';
 import { useMemo, useEffect } from 'react';
 import BombModal from '@/components/modal/bomb-modal/index';
 
-// const videoSource =
-//   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+const videoSource =
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
 
 export default function StreamViewer() {
-  const { streamId } = useLocalSearchParams<{ streamId: string }>();
+  const { streamId, type } = useLocalSearchParams<{ streamId: string; type?: string }>();
   const { streamData } = useStreamDetail(streamId);
+  
+  const isVideo = type === 'video';
   const {
     showControls,
     controlsAnimatedStyle,
@@ -53,7 +56,7 @@ export default function StreamViewer() {
   const { player, error: playerError } = useVideoPlayerControls({
     source: videoSource || '',
     onPlayPause: showControlsWithAnimation,
-    isLive: true, 
+    isLive: !isVideo,
   });
 
   const swipeDownGesture = useSwipeDownGesture(exitFullscreen);
@@ -91,6 +94,7 @@ export default function StreamViewer() {
       }
     );
   };
+  // 라이브일 때만 useStreamViewer 사용 (채팅, 뷰어 수 등)
   const {
     showBombModal,
     setShowBombModal,
@@ -106,6 +110,10 @@ export default function StreamViewer() {
     handleSubscribe,
     handleSendMessage,
   } = useStreamViewer({ showControlsWithAnimation, isFullscreen });
+  
+  // 동영상일 때는 기본값 사용
+  const videoViewCount = isVideo ? 0 : viewerCount; // 동영상 조회수는 별도로 받아야 함
+  const videoUploadDate = isVideo ? '' : streamingTime; // 동영상 업로드 날짜는 별도로 받아야 함
 
   const handleFullscreen = () => {
     enterFullscreen();
@@ -155,33 +163,56 @@ export default function StreamViewer() {
       </VideoPlayerContainer>
       
       {!isFullscreen && (
-        <StreamContent
-          showVideoInfo={showVideoInfo}
-          videoInfoStyle={videoInfoStyle}
-          videoInfoHeight={videoInfoHeight}
-          originalHeightRef={originalHeightRef}
-          viewerCount={viewerCount}
-          streamingTime={streamingTime}
-          followerCount={followerCount}
-          chatMessages={chatMessages}
-          onSendMessage={handleSendMessage}
-          onBombPress={() => setShowBombModal(true)}
-          onFollow={toggleFollow}
-          onSubscribe={handleSubscribe}
-          streamData={streamData}
-          isFollowing={isFollowing}
-        />
+        <>
+          {isVideo ? (
+            // 동영상 UI
+            <VideoContent
+              showVideoInfo={showVideoInfo}
+              videoInfoStyle={videoInfoStyle}
+              videoInfoHeight={videoInfoHeight}
+              originalHeightRef={originalHeightRef}
+              viewCount={videoViewCount}
+              uploadDate={videoUploadDate}
+              followerCount={followerCount}
+              onFollow={toggleFollow}
+              onSubscribe={handleSubscribe}
+              streamData={streamData}
+              isFollowing={isFollowing}
+            />
+          ) : (
+            // 라이브 UI
+            <StreamContent
+              showVideoInfo={showVideoInfo}
+              videoInfoStyle={videoInfoStyle}
+              videoInfoHeight={videoInfoHeight}
+              originalHeightRef={originalHeightRef}
+              viewerCount={viewerCount}
+              streamingTime={streamingTime}
+              followerCount={followerCount}
+              chatMessages={chatMessages}
+              onSendMessage={handleSendMessage}
+              onBombPress={() => setShowBombModal(true)}
+              onFollow={toggleFollow}
+              onSubscribe={handleSubscribe}
+              streamData={streamData}
+              isFollowing={isFollowing}
+            />
+          )}
+        </>
       )}
       
-      <BombModal
-        visible={showBombModal}
-        onClose={() => setShowBombModal(false)}
-        videoPlayerWidth={videoPlayerWidth}
-        videoPlayerX={videoPlayerX}
-        videoPlayerY={videoPlayerY}
-        videoPlayerHeight={videoPlayerHeight}
-        chatMessages={chatMessages}
-      />
+      {/* 라이브일 때만 BombModal 표시 */}
+      {!isVideo && (
+        <BombModal
+          visible={showBombModal}
+          onClose={() => setShowBombModal(false)}
+          videoPlayerWidth={videoPlayerWidth}
+          videoPlayerX={videoPlayerX}
+          videoPlayerY={videoPlayerY}
+          videoPlayerHeight={videoPlayerHeight}
+          chatMessages={chatMessages}
+        />
+      )}
     </Container>
   );
 }

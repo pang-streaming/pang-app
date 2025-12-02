@@ -1,4 +1,4 @@
-import { ImageBackground, Text, View, Image, Pressable } from "react-native";
+import { ImageBackground, Text, View, Image, Pressable, TouchableOpacity } from "react-native";
 import styled, { ThemeProps } from "styled-components/native";
 import { LiveChip } from "../ui/LiveChip";
 import { More } from "../icons/More";
@@ -28,7 +28,9 @@ export default function LiveElem({ stream, video }: LiveElemProps) {
     
     try {
       await fetchLiveStreamDetail(streamId);
-      router.push(`/stream-viewer?streamId=${streamId}`);
+      // video prop이 있으면 동영상이므로 type=video 추가
+      const typeParam = video ? '&type=video' : '';
+      router.push(`/stream-viewer?streamId=${streamId}${typeParam}`);
     } catch (error) {
       console.error("Failed to fetch stream detail:", error);
     }
@@ -62,7 +64,7 @@ export default function LiveElem({ stream, video }: LiveElemProps) {
   );
 }
 
-const Container = styled(Pressable)`
+const Container = styled(TouchableOpacity)`
   width: 100%;
   gap: 10px;
   flex-direction: row;

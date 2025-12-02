@@ -1,4 +1,4 @@
-import { Pressable, View } from 'react-native';
+import { Pressable, View, Platform, NativeModules } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { GestureDetector } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
@@ -9,6 +9,7 @@ import { VideoView, VideoPlayer as ExpoVideoPlayer } from 'expo-video';
 import Text from '@/components/ui/Text';
 import Dismiss from '@/components/icons/Dismiss';
 import type { StyleProp, ViewStyle } from 'react-native';
+import { useRef } from 'react';
 
 interface VideoPlayerProps {
   player: ExpoVideoPlayer;
@@ -34,6 +35,90 @@ export default function VideoPlayer({
   swipeDownGesture,
 }: VideoPlayerProps) {
   const insets = useSafeAreaInsets();
+  const videoViewRef = useRef<any>(null);
+
+  // Picture-in-Picture 모드 진입
+  const handleEnterPictureInPicture = async () => {
+    try {
+      console.log('PiP 버튼 클릭됨');
+      console.log('Platform:', Platform.OS);
+      console.log('Player exists:', !!player);
+      console.log('VideoViewRef exists:', !!videoViewRef.current);
+      
+      // VideoView ref를 통한 시도 (가장 우선)
+      if (videoViewRef.current) {
+        const videoView = videoViewRef.current as any;
+        console.log('VideoView methods:', Object.keys(videoView || {}));
+        
+        // 가능한 모든 메서드 이름 시도
+        const methods = [
+          'startPictureInPicture',
+          'enterPictureInPicture',
+          'presentPictureInPicture',
+          'enablePictureInPicture',
+        ];
+        
+        for (const methodName of methods) {
+          if (typeof videoView[methodName] === 'function') {
+            try {
+              await videoView[methodName]();
+              console.log(`Picture-in-Picture 모드 진입 성공 (${methodName})`);
+              return;
+            } catch (e) {
+              console.log(`${methodName} 실패:`, e);
+            }
+          }
+        }
+      }
+      
+      // player 객체를 통한 시도
+      if (player) {
+        const playerAny = player as any;
+        console.log('Player methods:', Object.keys(playerAny || {}));
+        
+        const methods = [
+          'startPictureInPicture',
+          'enterPictureInPicture',
+          'presentPictureInPicture',
+          'enablePictureInPicture',
+        ];
+        
+        for (const methodName of methods) {
+          if (typeof playerAny[methodName] === 'function') {
+            try {
+              await playerAny[methodName]();
+              console.log(`Picture-in-Picture 모드 진입 성공 (Player.${methodName})`);
+              return;
+            } catch (e) {
+              console.log(`Player.${methodName} 실패:`, e);
+            }
+          }
+        }
+      }
+      
+      // Android의 경우 Activity의 enterPictureInPictureMode 사용
+      if (Platform.OS === 'android') {
+        try {
+          // expo-video의 네이티브 모듈 확인
+          const expoVideoModule = NativeModules.ExpoVideoModule || NativeModules.ExpoVideo;
+          if (expoVideoModule && typeof expoVideoModule.enterPictureInPictureMode === 'function') {
+            await expoVideoModule.enterPictureInPictureMode();
+            console.log('Picture-in-Picture 모드 진입 성공 (Android NativeModule)');
+            return;
+          }
+        } catch (e) {
+          console.log('Android NativeModules 접근 실패:', e);
+        }
+      }
+      
+      // 모든 방법이 실패한 경우
+      console.warn('Picture-in-Picture 메서드를 찾을 수 없습니다.');
+      console.log('VideoViewRef 상세:', videoViewRef.current);
+      console.log('Player 상세:', player);
+    } catch (error) {
+      console.error('Picture-in-Picture 진입 실패:', error);
+    }
+  };
 
   // 플레이어가 초기화되지 않았으면 렌더링하지 않음
   if (!player) {
@@ -61,9 +146,10 @@ export default function VideoPlayer({
               onPress={toggleControls}
             >
               <VideoView 
+                ref={videoViewRef}
                 style={{ width: '100%', height: '100%' }} 
                 player={player} 
-                allowsPictureInPicture={false}
+                allowsPictureInPicture={true}
                 nativeControls={false}
                 contentFit="contain"
               />
@@ -87,7 +173,7 @@ export default function VideoPlayer({
                     <Dismiss color="#FFFFFF" />
                   </CloseButton>
                   <TopRightButtons>
-                    <IconButton>
+                    <IconButton onPress={handleEnterPictureInPicture}>
                       <Text size={20} color="#FFFFFF">↗</Text>
                     </IconButton>
                     <IconButton>
@@ -122,9 +208,10 @@ export default function VideoPlayer({
           onPress={toggleControls}
         >
           <VideoView 
+            ref={videoViewRef}
             style={{ width: '100%', height: '100%' }} 
             player={player} 
-            allowsPictureInPicture={false}
+            allowsPictureInPicture={true}
             nativeControls={false}
             contentFit="contain"
           />
@@ -148,7 +235,7 @@ export default function VideoPlayer({
                 <Dismiss color="#FFFFFF" />
               </CloseButton>
               <TopRightButtons>
-                <IconButton>
+                <IconButton onPress={handleEnterPictureInPicture}>
                   <Text size={20} color="#FFFFFF">↗</Text>
                 </IconButton>
                 <View style={{ width: 12 }} />
@@ -159,10 +246,10 @@ export default function VideoPlayer({
             </TopControls>
             <BottomControls style={controlsAnimatedStyle}>
               <LiveIconContainer>
-                <LiveIcon />
-                <Text size={12} weight="600" color="#FFFFFF">
+                {/* <LiveIcon /> */}
+                {/* <Text size={12} weight="600" color="#FFFFFF">
                   LIVE
-                </Text>
+                </Text> */}
               </LiveIconContainer>
               <FullscreenButton onPress={onEnterFullscreen}>
                 <Text size={20} color="#FFFFFF">⛶</Text>

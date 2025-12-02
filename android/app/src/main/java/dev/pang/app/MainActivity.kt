@@ -1,4 +1,4 @@
-package com.pang.app
+package dev.pang.app
 
 import android.os.Build
 import android.os.Bundle

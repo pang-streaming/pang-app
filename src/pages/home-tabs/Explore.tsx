@@ -14,13 +14,10 @@ export default function Explore() {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      // 모든 관련 쿼리 refetch
       await Promise.all([
         queryClient.refetchQueries({ queryKey: ['followingLives'] }),
         queryClient.refetchQueries({ queryKey: ['lives'] }),
       ]);
-      // TopVideoList는 axios를 직접 사용하므로 컴포넌트를 다시 마운트해야 함
-      // 이 경우는 컴포넌트 key를 변경하거나 별도 refetch 로직이 필요할 수 있음
     } finally {
       setRefreshing(false);
     }
@@ -44,6 +41,7 @@ export default function Explore() {
 const Container = styled(View)`
   width: 100%;
   /* padding: 0 16px; */
+  padding-top: 20px;
   flex-direction: column;
   align-items: center;
   gap: 10px;

@@ -83,7 +83,9 @@ export const CategoryInfo = ({ categoryId, categoryName, categoryImage, onRefetc
   };
 
   const handleItemPress = (item: CategoryLive) => {
-    router.push(`/stream-viewer?streamId=${item.streamId}`);
+    // 동영상 탭일 때만 type=video 추가
+    const typeParam = selectedTab === 'video' ? '&type=video' : '';
+    router.push(`/stream-viewer?streamId=${item.streamId}${typeParam}`);
   };
 
   return (
